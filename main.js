@@ -1,6 +1,6 @@
 // Sample artist data (Using reportUrls[0] for the main panel)
 const artists = [
-  { id: 'artist1', name: 'Leonardo da Vinci', reportUrls: [
+  { id: 'artist1', name: 'BTS', reportUrls: [
     'https://lookerstudio.google.com/embed/reporting/0ec3d1cf-547b-4e66-8c81-77921c1cab64/page/gnpEF', // URL for this artist's panel
     'about:blank',
     'about:blank',
