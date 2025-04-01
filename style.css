@@ -23,7 +23,9 @@
   --animation-duration: 1.5s; /* Slightly slower for smoother glow */
   --transition-duration: 0.3s; /* Duration for selection transition */
   --header-height: 65px; /* Estimated header height for calc() */
-  --panel-min-height: 300px; /* Minimum height for each artist panel */
+  /* --panel-min-height: 300px; /* No longer primary height driver */
+  --panel-height-desktop: 75vh; /* New height for desktop panels */
+  --panel-height-mobile: 50vh; /* New height for mobile panels */
   --panel-border-width: 2px; /* Define border width as a variable */
 }
 
@@ -163,7 +165,8 @@ body {
   display: flex; /* Use flex to make iframe fill the panel */
   /* Apply the new glow animation */
   animation: pulseGlow var(--animation-duration) ease-in-out infinite;
-  min-height: var(--panel-min-height); /* Ensure panels have a minimum height */
+  /* Set panel height using variable */
+  height: var(--panel-height-desktop);
   width: 100%; /* Take full width of the panels-section */
   margin-bottom: var(--gap); /* Add space between panels */
   box-sizing: border-box; /* Include border in width/height */
@@ -180,7 +183,7 @@ body {
 .panel iframe {
   width: 100%;
   height: 100%; /* Iframe fills the panel */
-  min-height: var(--panel-min-height); /* Ensure iframe itself has min height */
+  /* min-height removed, rely on panel height */
   border: none; /* Ensure no iframe border */
   display: block;
 }
@@ -218,7 +221,7 @@ body {
     flex-grow: 0; /* Prevent sidebar from growing */
     flex-shrink: 0; /* Prevent sidebar from shrinking */
     order: 1; /* Ensure sidebar comes after header */
-    height: auto; /* Override fixed height */
+    /* height: auto; /* Override fixed height - Already set */
   }
 
    .artist-list-section h2 {
@@ -236,7 +239,8 @@ body {
   }
 
   .panel {
-     min-height: 250px; /* Ensure minimum height */
+     /* Use mobile panel height variable */
+     height: var(--panel-height-mobile);
      margin-bottom: var(--gap); /* Keep space */
      /* Animation remains */
   }
