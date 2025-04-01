@@ -1,0 +1,252 @@
+:root {
+  /* Use Montserrat as the primary font */
+  font-family: 'Montserrat', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* --panel-aspect-ratio: 1 / 1; REMOVED - Height is now auto/content-based */
+  --sidebar-width-percentage: 20%;
+  --gap: 15px; /* Gap between elements */
+  --main-bg-color: #FFFFFF;
+  --sidebar-bg-color: #FFD600;
+  --sidebar-text-color: #000000; /* Black text on yellow */
+  --panel-bg-color: #FFFFFF;
+  --panel-border-color: #FFD600;
+  --header-bg-color: #FFD600;
+  --header-text-color: #000000;
+  --active-item-bg-color: #FFFFFF;
+  --active-item-text-color: #000000;
+  --animation-duration: 1s;
+  --transition-duration: 0.3s; /* Duration for selection transition */
+  --header-height: 65px; /* Estimated header height for calc() */
+  --panel-min-height: 300px; /* Minimum height for each artist panel */
+}
+
+/* Define the pulsating border animation */
+@keyframes pulseBorder {
+  0% {
+    border-width: 2px;
+    box-shadow: 0 0 3px 0 var(--panel-border-color);
+  }
+  50% {
+    border-width: 4px;
+    box-shadow: 0 0 8px 2px var(--panel-border-color);
+  }
+  100% {
+    border-width: 2px;
+    box-shadow: 0 0 3px 0 var(--panel-border-color);
+  }
+}
+
+body {
+  margin: 0;
+  height: 100vh; /* Ensure body takes full viewport height */
+  max-height: 100vh; /* Prevent body from exceeding viewport */
+  background-color: var(--main-bg-color);
+  color: #000000; /* Default text color black */
+  display: flex; /* Use flexbox for header + container layout */
+  flex-direction: column; /* Stack header and container vertically */
+  overflow: hidden; /* Prevent body scroll */
+}
+
+/* Header Styles */
+.main-header {
+  background-color: var(--header-bg-color);
+  color: var(--header-text-color);
+  padding: 1em var(--gap); /* Vertical and horizontal padding */
+  text-align: center;
+  width: 100%; /* Full width */
+  box-sizing: border-box; /* Include padding in width */
+  flex-shrink: 0; /* Prevent header from shrinking */
+  height: var(--header-height); /* Use variable for height */
+  display: flex; /* Center content vertically */
+  align-items: center;
+  justify-content: center;
+}
+
+.main-header h1 {
+  margin: 0;
+  font-size: 1.5em; /* Adjust size as needed */
+  font-weight: 700; /* Bold title */
+}
+
+.container {
+  display: flex;
+  /* flex-wrap: wrap; REMOVED - No longer wrapping */
+  padding: var(--gap);
+  gap: var(--gap);
+  flex-grow: 1; /* Allow container to fill remaining vertical space */
+  overflow: hidden; /* Prevent container scroll, children will scroll */
+  /* Calculate max height for the container itself */
+  max-height: calc(100vh - var(--header-height));
+  box-sizing: border-box;
+}
+
+/* Left Section: Artist List */
+.artist-list-section {
+  flex: 0 0 var(--sidebar-width-percentage);
+  background-color: var(--sidebar-bg-color);
+  color: var(--sidebar-text-color); /* Black text */
+  padding: var(--gap);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow-y: auto; /* Enable vertical scrolling */
+  box-sizing: border-box; /* Include padding in height calculation */
+  /* Make the section fill the available height within the container */
+  height: calc(100vh - var(--header-height) - 2 * var(--gap));
+}
+
+.artist-list-section h2 {
+  margin-top: 0;
+  color: var(--sidebar-text-color); /* Black text */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Darker border for contrast */
+  padding-bottom: 0.5em;
+  position: sticky; /* Keep title visible */
+  top: -1px; /* Adjust slightly if needed */
+  background-color: var(--sidebar-bg-color); /* Match background */
+  z-index: 1; /* Ensure it's above list items */
+}
+
+#artist-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#artist-list li {
+  padding: 0.75em 0.5em;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 0.25em;
+  color: var(--sidebar-text-color); /* Ensure list items also have black text */
+  background-color: transparent; /* Default background */
+  /* Add transition for background, color, and transform */
+  transition: background-color var(--transition-duration) ease,
+              color var(--transition-duration) ease,
+              transform var(--transition-duration) ease;
+  transform: translateY(0); /* Initial state for transform */
+}
+
+#artist-list li:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Slight dark highlight on hover */
+}
+
+#artist-list li.active {
+  background-color: var(--active-item-bg-color); /* White background */
+  color: var(--active-item-text-color); /* Black text */
+  font-weight: bold;
+  /* Subtle slide/press down effect */
+  transform: translateY(2px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Optional: add shadow for depth */
+}
+
+/* Right Section: Panels */
+.panels-section {
+  flex: 1; /* Takes remaining space */
+  /* display: grid; REMOVED - Changed to block/vertical stack */
+  /* grid-template-columns: repeat(2, 1fr); REMOVED */
+  /* gap: var(--gap); REMOVED - Using margin on panels now */
+  min-width: 0; /* Prevent flex blowout */
+  overflow-y: auto; /* Enable vertical scrolling for the entire section */
+  /* Make the section fill the available height within the container */
+  height: calc(100vh - var(--header-height) - 2 * var(--gap));
+  padding-right: 5px; /* Add a little padding so scrollbar doesn't overlap content */
+  box-sizing: border-box;
+}
+
+.panel {
+  background-color: var(--panel-bg-color);
+  border: 2px solid var(--panel-border-color); /* Initial border */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden; /* Clip content like iframe */
+  /* aspect-ratio: var(--panel-aspect-ratio); REMOVED */
+  display: flex; /* Use flex to make iframe fill the panel */
+  /* Apply the animation */
+  animation: pulseBorder var(--animation-duration) ease-in-out infinite;
+  min-height: var(--panel-min-height); /* Ensure panels have a minimum height */
+  width: 100%; /* Take full width of the panels-section */
+  margin-bottom: var(--gap); /* Add space between panels */
+  box-sizing: border-box; /* Include border in width/height */
+}
+
+/* Remove margin from the last panel */
+.panel:last-child {
+  margin-bottom: 0;
+}
+
+/* REMOVED - Staggered animation delays not needed for vertical list */
+/* .panel:nth-child(1) { animation-delay: 0s; } ... */
+
+
+.panel iframe {
+  width: 100%;
+  height: 100%; /* Iframe fills the panel */
+  min-height: var(--panel-min-height); /* Ensure iframe itself has min height */
+  border: none; /* Ensure no iframe border */
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) { /* Adjust breakpoint as needed */
+ .artist-list-section {
+     /* Slightly wider sidebar on medium screens */
+    flex: 0 0 30%;
+  }
+  /* Panels section already takes remaining space */
+}
+
+
+@media (max-width: 768px) {
+  body {
+    overflow: auto; /* Allow body scroll on small screens if content overflows */
+  }
+  .container {
+    flex-direction: column; /* Stack sections vertically */
+    overflow: visible; /* Allow container to grow */
+    max-height: none; /* Remove max-height constraint */
+    height: auto; /* Allow container height to adjust */
+    flex-wrap: nowrap; /* Prevent wrapping when stacked */
+    gap: 0; /* Remove gap when stacked, rely on margins */
+    padding: var(--gap); /* Keep padding */
+  }
+
+  .artist-list-section {
+    flex-basis: auto; /* Allow sidebar to take natural height */
+    width: 100%; /* Full width */
+    max-height: 35vh; /* Limit height on small screens */
+    height: auto; /* Let content determine height up to max-height */
+    margin-bottom: var(--gap); /* Space below sidebar */
+    flex-grow: 0; /* Prevent sidebar from growing */
+    flex-shrink: 0; /* Prevent sidebar from shrinking */
+    order: 1; /* Ensure sidebar comes after header */
+    height: auto; /* Override fixed height */
+  }
+
+   .artist-list-section h2 {
+     position: static; /* Disable sticky header on mobile */
+   }
+
+  .panels-section {
+    /* Already single column effectively */
+    width: 100%; /* Ensure panels take full width */
+    order: 2; /* Ensure panels come after sidebar */
+    height: auto; /* Allow panel section to grow based on content */
+    max-height: none; /* Remove max height constraint */
+    overflow-y: visible; /* Disable scroll on section itself, let page scroll */
+    padding-right: 0; /* Remove padding for scrollbar */
+  }
+
+  .panel {
+     /* Adjust aspect ratio or set fixed height if needed for single column */
+     /* aspect-ratio: 16 / 9; /* Revert to a more standard aspect ratio */
+     min-height: 250px; /* Ensure minimum height */
+     /* width: 100%; Already set */
+     margin-bottom: var(--gap); /* Keep space */
+  }
+}
