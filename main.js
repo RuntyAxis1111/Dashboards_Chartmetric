@@ -1,6 +1,6 @@
 // Sample artist data (Using reportUrls[0] for the main panel)
 const artists = [
-  { id: 'artist1', name: 'BTS', reportUrls: [
+  { id: 'artist1', name: 'Leonardo da Vinci', reportUrls: [
     'https://lookerstudio.google.com/embed/reporting/0ec3d1cf-547b-4e66-8c81-77921c1cab64/page/gnpEF', // URL for this artist's panel
     'about:blank',
     'about:blank',
@@ -34,7 +34,6 @@ const artists = [
 
 const artistListElement = document.getElementById('artist-list');
 const panelsSectionElement = document.getElementById('panels-section');
-// REMOVED: const panels = [...] - Panels are now dynamic
 
 // Function to render the artist list
 function renderArtistList() {
@@ -108,11 +107,23 @@ function handleArtistSelection(event) {
   });
   selectedLi.classList.add('active');
 
-  // Optional: Scroll the selected panel into view if needed
-  // const targetPanel = panelsSectionElement.querySelector(`.panel[data-artist-id="${artistId}"]`);
-  // if (targetPanel) {
-  //   targetPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  // }
+  // Scroll the selected panel into view smoothly
+  const targetPanel = panelsSectionElement.querySelector(`.panel[data-artist-id="${artistId}"]`);
+  if (targetPanel) {
+    // Calculate the position to scroll to, considering the header and gap
+    const headerHeight = document.querySelector('.main-header').offsetHeight;
+    const containerPadding = parseFloat(getComputedStyle(document.querySelector('.container')).paddingTop);
+    const panelMarginTop = parseFloat(getComputedStyle(targetPanel).marginTop); // Should be 0 for first, var(--gap) otherwise
+
+    // Calculate the offset relative to the scrollable container (.panels-section)
+    const panelOffsetTop = targetPanel.offsetTop;
+
+    // Scroll the .panels-section container
+    panelsSectionElement.scrollTo({
+        top: panelOffsetTop - panelMarginTop, // Scroll to the top edge of the panel (minus its top margin)
+        behavior: 'smooth'
+    });
+  }
 }
 
 // Initial setup

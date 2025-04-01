@@ -9,7 +9,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* --panel-aspect-ratio: 1 / 1; REMOVED - Height is now auto/content-based */
   --sidebar-width-percentage: 20%;
   --gap: 15px; /* Gap between elements */
   --main-bg-color: #FFFFFF;
@@ -21,25 +20,26 @@
   --header-text-color: #000000;
   --active-item-bg-color: #FFFFFF;
   --active-item-text-color: #000000;
-  --animation-duration: 1s;
+  --animation-duration: 1.5s; /* Slightly slower for smoother glow */
   --transition-duration: 0.3s; /* Duration for selection transition */
   --header-height: 65px; /* Estimated header height for calc() */
   --panel-min-height: 300px; /* Minimum height for each artist panel */
+  --panel-border-width: 2px; /* Define border width as a variable */
 }
 
-/* Define the pulsating border animation */
-@keyframes pulseBorder {
+/* Define the pulsating glow animation */
+@keyframes pulseGlow {
   0% {
-    border-width: 2px;
-    box-shadow: 0 0 3px 0 var(--panel-border-color);
+    /* Start with a subtle glow */
+    box-shadow: 0 0 4px 0px var(--panel-border-color);
   }
   50% {
-    border-width: 4px;
-    box-shadow: 0 0 8px 2px var(--panel-border-color);
+    /* Increase spread and blur for a stronger glow */
+    box-shadow: 0 0 10px 3px var(--panel-border-color);
   }
   100% {
-    border-width: 2px;
-    box-shadow: 0 0 3px 0 var(--panel-border-color);
+    /* Return to subtle glow */
+    box-shadow: 0 0 4px 0px var(--panel-border-color);
   }
 }
 
@@ -77,12 +77,10 @@ body {
 
 .container {
   display: flex;
-  /* flex-wrap: wrap; REMOVED - No longer wrapping */
   padding: var(--gap);
   gap: var(--gap);
   flex-grow: 1; /* Allow container to fill remaining vertical space */
   overflow: hidden; /* Prevent container scroll, children will scroll */
-  /* Calculate max height for the container itself */
   max-height: calc(100vh - var(--header-height));
   box-sizing: border-box;
 }
@@ -96,8 +94,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   overflow-y: auto; /* Enable vertical scrolling */
-  box-sizing: border-box; /* Include padding in height calculation */
-  /* Make the section fill the available height within the container */
+  box-sizing: border-box;
   height: calc(100vh - var(--header-height) - 2 * var(--gap));
 }
 
@@ -140,7 +137,7 @@ body {
   background-color: var(--active-item-bg-color); /* White background */
   color: var(--active-item-text-color); /* Black text */
   font-weight: bold;
-  /* Subtle slide/press down effect */
+  /* Subtle slide/press down effect for the list item */
   transform: translateY(2px);
   box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Optional: add shadow for depth */
 }
@@ -148,12 +145,8 @@ body {
 /* Right Section: Panels */
 .panels-section {
   flex: 1; /* Takes remaining space */
-  /* display: grid; REMOVED - Changed to block/vertical stack */
-  /* grid-template-columns: repeat(2, 1fr); REMOVED */
-  /* gap: var(--gap); REMOVED - Using margin on panels now */
   min-width: 0; /* Prevent flex blowout */
   overflow-y: auto; /* Enable vertical scrolling for the entire section */
-  /* Make the section fill the available height within the container */
   height: calc(100vh - var(--header-height) - 2 * var(--gap));
   padding-right: 5px; /* Add a little padding so scrollbar doesn't overlap content */
   box-sizing: border-box;
@@ -161,28 +154,28 @@ body {
 
 .panel {
   background-color: var(--panel-bg-color);
-  border: 2px solid var(--panel-border-color); /* Initial border */
+  /* Use fixed border width */
+  border: var(--panel-border-width) solid var(--panel-border-color);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  /* Initial box-shadow state for the animation */
+  box-shadow: 0 0 4px 0px var(--panel-border-color);
   overflow: hidden; /* Clip content like iframe */
-  /* aspect-ratio: var(--panel-aspect-ratio); REMOVED */
   display: flex; /* Use flex to make iframe fill the panel */
-  /* Apply the animation */
-  animation: pulseBorder var(--animation-duration) ease-in-out infinite;
+  /* Apply the new glow animation */
+  animation: pulseGlow var(--animation-duration) ease-in-out infinite;
   min-height: var(--panel-min-height); /* Ensure panels have a minimum height */
   width: 100%; /* Take full width of the panels-section */
   margin-bottom: var(--gap); /* Add space between panels */
   box-sizing: border-box; /* Include border in width/height */
+  /* Ensure no transform or position changes that cause movement */
+  transform: none;
+  position: relative; /* Or static, ensure it's not absolute/fixed causing issues */
 }
 
 /* Remove margin from the last panel */
 .panel:last-child {
   margin-bottom: 0;
 }
-
-/* REMOVED - Staggered animation delays not needed for vertical list */
-/* .panel:nth-child(1) { animation-delay: 0s; } ... */
-
 
 .panel iframe {
   width: 100%;
@@ -243,10 +236,8 @@ body {
   }
 
   .panel {
-     /* Adjust aspect ratio or set fixed height if needed for single column */
-     /* aspect-ratio: 16 / 9; /* Revert to a more standard aspect ratio */
      min-height: 250px; /* Ensure minimum height */
-     /* width: 100%; Already set */
      margin-bottom: var(--gap); /* Keep space */
+     /* Animation remains */
   }
 }
