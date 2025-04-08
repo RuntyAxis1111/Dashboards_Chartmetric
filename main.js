@@ -1,35 +1,47 @@
-// Sample artist data (Using reportUrls[0] for the main panel)
+// Updated artist data with new artists and their embeds
 const artists = [
   { id: 'artist1', name: 'BTS', reportUrls: [
-    'https://lookerstudio.google.com/embed/reporting/0ec3d1cf-547b-4e66-8c81-77921c1cab64/page/gnpEF', // URL for this artist's panel
+    'https://lookerstudio.google.com/embed/reporting/0ec3d1cf-547b-4e66-8c81-77921c1cab64/page/gnpEF',
     'about:blank',
     'about:blank',
     'about:blank'
   ]},
-  { id: 'artist2', name: 'Vincent van Gogh', reportUrls: [
-    'https://lookerstudio.google.com/embed/reporting/0B5FF66SS2W79fjFMQUlJNzJWUEJQR3JXNHR5cGkyVW5ReUxlZ2stTDBsTDRkZEdIZ0lnSEE/page/IzXD', // URL for this artist's panel
+  { id: 'artist2', name: 'Chicocurlyhead', reportUrls: [
+    'https://lookerstudio.google.com/embed/reporting/2cdea0f6-6583-4f4d-8500-b0a58e677dc6/page/gnpEF',
     'about:blank',
     'about:blank',
     'about:blank'
   ]},
-  { id: 'artist3', name: 'Claude Monet', reportUrls: [
-    'https://lookerstudio.google.com/embed/reporting/0B5FF66SS2W79fjFMQUlJNzJWUEJQR3JXNHR5cGkyVW5ReUxlZ2stTDBsTDRkZEdIZ0lnSEE/page/OzXD', // URL for this artist's panel
+  { id: 'artist3', name: 'MAGNA', reportUrls: [
+    'https://lookerstudio.google.com/embed/reporting/d53caf15-04e7-4737-b2ab-d9b47a9752e9/page/gnpEF',
     'about:blank',
     'about:blank',
     'about:blank'
   ]},
-  { id: 'artist4', name: 'Pablo Picasso', reportUrls: [
-    'https://lookerstudio.google.com/embed/reporting/0B5FF66SS2W79fjFMQUlJNzJWUEJQR3JXNHR5cGkyVW5ReUxlZ2stTDBsTDRkZEdIZ0lnSEE/page/QzXD', // URL for this artist's panel
+  { id: 'artist4', name: 'Adrian Cota', reportUrls: [
+    'https://lookerstudio.google.com/embed/reporting/a1f0ea40-c3b2-4df5-979d-4ab132a2b7ec/page/gnpEF',
     'about:blank',
     'about:blank',
     'about:blank'
   ]},
-   { id: 'artist5', name: 'Frida Kahlo', reportUrls: ['about:blank','about:blank','about:blank','about:blank'] },
-   { id: 'artist6', name: 'Salvador Dalí', reportUrls: ['about:blank','about:blank','about:blank','about:blank'] },
-   { id: 'artist7', name: 'Rembrandt', reportUrls: ['about:blank','about:blank','about:blank','about:blank'] },
-   { id: 'artist8', name: 'Michelangelo', reportUrls: ['about:blank','about:blank','about:blank','about:blank'] },
-   { id: 'artist9', name: 'Georgia O\'Keeffe', reportUrls: ['about:blank','about:blank','about:blank','about:blank'] },
-   { id: 'artist10', name: 'Jackson Pollock', reportUrls: ['about:blank','about:blank','about:blank','about:blank'] },
+  { id: 'artist5', name: 'Meme del Real', reportUrls: [
+    'https://lookerstudio.google.com/embed/reporting/ce6d6f8f-4e3e-458f-ad76-7bd16651cd52/page/gnpEF',
+    'about:blank',
+    'about:blank',
+    'about:blank'
+  ]},
+  { id: 'artist6', name: 'andrea ele', reportUrls: [
+    'https://lookerstudio.google.com/embed/reporting/08ebac8f-33d1-48fe-94ad-98357027f20a/page/gnpEF',
+    'about:blank',
+    'about:blank',
+    'about:blank'
+  ]},
+  { id: 'artist7', name: 'América Fernández', reportUrls: [
+    'https://lookerstudio.google.com/embed/reporting/01360d8d-5515-477c-819d-11ecba384212/page/gnpEF',
+    'about:blank',
+    'about:blank',
+    'about:blank'
+  ]},
 ];
 
 const artistListElement = document.getElementById('artist-list');
