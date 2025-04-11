@@ -1,5 +1,11 @@
-// Updated artist data with new artists and their embeds
+// Updated artist data with Daddy Yankee added at the beginning
 const artists = [
+  { id: 'artist0', name: 'Daddy Yankee', reportUrls: [ // Added Daddy Yankee
+    'https://lookerstudio.google.com/embed/reporting/0114febd-b174-4d34-8e78-f6b10a94535f/page/p_2la4tiiyqd',
+    'about:blank',
+    'about:blank',
+    'about:blank'
+  ]},
   { id: 'artist1', name: 'BTS', reportUrls: [
     'https://lookerstudio.google.com/embed/reporting/0ec3d1cf-547b-4e66-8c81-77921c1cab64/page/gnpEF',
     'about:blank',
