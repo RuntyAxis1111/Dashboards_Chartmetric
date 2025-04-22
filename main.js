@@ -1,5 +1,5 @@
 // Updated artist data with Daddy Yankee added at the beginning
-const artists = [
+const artistsData = [
   { id: 'artist0', name: 'Daddy Yankee', reportUrls: [ // Added Daddy Yankee
     'https://lookerstudio.google.com/embed/reporting/0114febd-b174-4d34-8e78-f6b10a94535f/page/p_2la4tiiyqd',
     'about:blank',
@@ -50,68 +50,109 @@ const artists = [
   ]},
 ];
 
-const artistListElement = document.getElementById('artist-list');
-const panelsSectionElement = document.getElementById('panels-section');
+// Data for PALF and TRUVATOS sections (Social Media)
+const socialMediaData = [
+  { id: 'fb', name: 'Facebook', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
+  { id: 'ig', name: 'Instagram', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
+  { id: 'x', name: 'X (Twitter)', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
+  { id: 'yt', name: 'YouTube', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
+  { id: 'tt', name: 'TikTok', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
+  { id: 'sc', name: 'Snapchat', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
+];
 
-// Function to render the artist list
-function renderArtistList() {
-  artistListElement.innerHTML = ''; // Clear existing list
-  artists.forEach(artist => {
-    const li = document.createElement('li');
-    li.textContent = artist.name;
-    li.dataset.artistId = artist.id; // Store artist ID for reference
-    li.addEventListener('click', handleArtistSelection);
-    artistListElement.appendChild(li);
-  });
+
+// Get elements
+const hamburgerIcon = document.getElementById('hamburger-icon');
+const navButtons = document.querySelectorAll('.nav-button');
+const contentSections = document.querySelectorAll('.content-section');
+
+
+// Generic function to render a list in a sidebar
+function renderList(listElementId, data, clickHandler) {
+  const listElement = document.getElementById(listElementId);
+  if (listElement) {
+    listElement.innerHTML = ''; // Clear existing list
+    data.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item.name;
+      li.dataset.itemId = item.id; // Store item ID for reference
+      // Pass the clickHandler function itself, not the result of calling it
+      li.addEventListener('click', (event) => clickHandler(event, data)); // Pass data to handler
+      listElement.appendChild(li);
+    });
+  }
 }
 
-// Function to render the panels dynamically
-function renderPanels() {
-  panelsSectionElement.innerHTML = ''; // Clear existing panels
-  artists.forEach(artist => {
-    // Create panel container
-    const panelDiv = document.createElement('div');
-    panelDiv.classList.add('panel');
-    panelDiv.dataset.artistId = artist.id; // Link panel to artist
+// Generic function to render panels in a grid container
+function renderPanels(gridContainerId, data) {
+  const gridContainerElement = document.getElementById(gridContainerId);
+  if (gridContainerElement) {
+    gridContainerElement.innerHTML = ''; // Clear existing panels from the grid container
+    data.forEach(item => {
+      // Create panel container (card)
+      const panelDiv = document.createElement('div');
+      panelDiv.classList.add('panel'); // Use 'panel' class for card styling
+      panelDiv.dataset.itemId = item.id; // Link panel to item
 
-    // Create iframe for content
-    const iframe = document.createElement('iframe');
-    iframe.title = `${artist.name} Panel`; // Accessible title
-    iframe.src = 'about:blank'; // Start empty
-    iframe.frameborder = "0";
-    iframe.style.border = "0";
-    iframe.allowfullscreen = true;
-    // Standard sandbox attributes
-    iframe.sandbox = "allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox";
+      // Create h2 title
+      const titleElement = document.createElement('h2');
+      titleElement.textContent = item.name; // Set title text
 
-    // Append iframe to panel, and panel to section
-    panelDiv.appendChild(iframe);
-    panelsSectionElement.appendChild(panelDiv);
-  });
+      // Create iframe for content
+      const iframe = document.createElement('iframe');
+      iframe.title = `${item.name} Panel`; // Accessible title
+      iframe.src = 'about:blank'; // Start empty
+      iframe.frameborder = "0";
+      iframe.style.border = "0";
+      iframe.allowfullscreen = true;
+      // Standard sandbox attributes
+      iframe.sandbox = "allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox";
+
+      // Append title and iframe to panel, and panel to the grid container
+      panelDiv.appendChild(titleElement); // Add title first
+      panelDiv.appendChild(iframe);
+      gridContainerElement.appendChild(panelDiv); // Append to grid container
+    });
+  }
 }
 
-
-// Function to handle artist selection
-function handleArtistSelection(event) {
+// Generic function to handle item selection in a sidebar
+// Added optional activeSectionElement parameter
+function handleSelection(event, data, activeSectionElement = null) {
   const selectedLi = event.target;
-  const artistId = selectedLi.dataset.artistId;
-  const selectedArtist = artists.find(artist => artist.id === artistId);
+  const itemId = selectedLi.dataset.itemId;
+  const selectedItem = data.find(item => item.id === itemId);
 
-  if (!selectedArtist) return;
+  if (!selectedItem) return;
 
-  // Update panel iframes: Load content into the selected artist's panel, clear others
-  const allPanels = panelsSectionElement.querySelectorAll('.panel');
+  // Find the active section - use passed element if available, otherwise query the DOM
+  const activeSection = activeSectionElement || document.querySelector('.content-section.active');
+
+  if (!activeSection) {
+      console.error('handleSelection: activeSection is null!');
+      return; // Exit if activeSection is null
+  }
+
+  // Find the grid container within the active section
+  const currentGridContainer = activeSection.querySelector('.grid-container');
+  if (!currentGridContainer) {
+      console.error('handleSelection: currentGridContainer is null!');
+      return; // Exit if currentGridContainer is null
+  }
+
+  // Update panel iframes: Load content into the selected item's panel, clear others
+  const allPanels = currentGridContainer.querySelectorAll('.panel');
   allPanels.forEach(panel => {
     const iframe = panel.querySelector('iframe');
     if (iframe) {
-      if (panel.dataset.artistId === artistId) {
-        // Use the first URL from the array for this panel
-        const targetUrl = selectedArtist.reportUrls[0] || 'about:blank';
+      if (panel.dataset.itemId === itemId) {
+        // Use the first URL from the array for artists, or the single URL for social media
+        const targetUrl = selectedItem.reportUrls ? selectedItem.reportUrls[0] || 'about:blank' : selectedItem.reportUrl || 'about:blank';
         if (iframe.src !== targetUrl) {
           iframe.src = targetUrl;
         }
       } else {
-        // Clear iframe if it's not the selected artist's panel
+        // Clear iframe if it's not the selected item's panel
         if (iframe.src !== 'about:blank') {
            iframe.src = 'about:blank';
         }
@@ -119,47 +160,227 @@ function handleArtistSelection(event) {
     }
   });
 
-  // Update active class styling on the artist list
-  document.querySelectorAll('#artist-list li').forEach(li => {
-    li.classList.remove('active');
-  });
-  selectedLi.classList.add('active');
+
+  // Update active class styling on the list within the active section
+  const currentList = activeSection.querySelector('ul'); // Find the list within the active section
+  if (currentList) {
+      currentList.querySelectorAll('li').forEach(li => {
+        li.classList.remove('active');
+      });
+      selectedLi.classList.add('active');
+  }
+
 
   // Scroll the selected panel into view smoothly
-  const targetPanel = panelsSectionElement.querySelector(`.panel[data-artist-id="${artistId}"]`);
-  if (targetPanel) {
-    // Calculate the position to scroll to, considering the header and gap
-    const headerHeight = document.querySelector('.main-header').offsetHeight;
-    const containerPadding = parseFloat(getComputedStyle(document.querySelector('.container')).paddingTop);
-    const panelMarginTop = parseFloat(getComputedStyle(targetPanel).marginTop); // Should be 0 for first, var(--gap) otherwise
-
-    // Calculate the offset relative to the scrollable container (.panels-section)
-    const panelOffsetTop = targetPanel.offsetTop;
-
-    // Scroll the .panels-section container
-    panelsSectionElement.scrollTo({
-        top: panelOffsetTop - panelMarginTop, // Scroll to the top edge of the panel (minus its top margin)
+  const currentPanelsSection = activeSection.querySelector('.panels-section'); // Find panels section in active section
+  const targetPanel = currentGridContainer.querySelector(`.panel[data-item-id="${itemId}"]`); // Find panel in current grid container
+  if (currentPanelsSection && targetPanel) {
+    currentPanelsSection.scrollTo({
+        top: targetPanel.offsetTop,
         behavior: 'smooth'
     });
   }
+
+
+  // On mobile, hide the sidebar after selection (optional, but common UX)
+  if (window.innerWidth <= 900) {
+      const currentSidebar = activeSection.querySelector('.artist-list-section'); // Find sidebar in active section
+      if (currentSidebar) {
+          currentSidebar.classList.remove('active');
+      }
+  }
 }
+
+// Function to toggle sidebar visibility on mobile (now needs to target the active sidebar)
+function toggleSidebar() {
+    const currentSidebar = document.querySelector('.content-section.active .artist-list-section');
+    if (currentSidebar) {
+        currentSidebar.classList.toggle('active');
+    }
+}
+
+// Add event listener to hamburger icon
+if (hamburgerIcon) {
+    hamburgerIcon.addEventListener('click', toggleSidebar);
+}
+
+/**
+ * Renders a circular gauge within the given element.
+ * @param {HTMLElement} el - The container element for the gauge.
+ * @param {number} percent - The percentage value (0-100) for the gauge progress.
+ * @param {string} label - The label text to display below the number.
+ */
+function renderGauge(el, percent, label = '') {
+    const radius = 60; // Radius of the circle
+    const circumference = 2 * Math.PI * radius;
+    const strokeWidth = 10; // Must match CSS .gauge-circle stroke-width
+
+    // Clear existing content
+    el.innerHTML = '';
+    el.classList.add('gauge'); // Ensure the container has the gauge class
+
+    // Create SVG element
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.classList.add('gauge-svg');
+    svg.setAttribute('viewBox', '0 0 120 120'); // Adjust viewBox based on radius and stroke
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+
+    // Create track circle
+    const trackCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    trackCircle.classList.add('gauge-circle', 'gauge-track');
+    trackCircle.setAttribute('cx', '60'); // Center X
+    trackCircle.setAttribute('cy', '60'); // Center Y
+    trackCircle.setAttribute('r', radius);
+
+    // Create progress circle
+    const progressCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    progressCircle.classList.add('gauge-circle', 'gauge-progress');
+    progressCircle.setAttribute('cx', '60'); // Center X
+    progressCircle.setAttribute('cy', '60'); // Center Y
+    progressCircle.setAttribute('r', radius);
+    progressCircle.style.strokeDasharray = circumference;
+    progressCircle.style.strokeDashoffset = circumference; // Start hidden
+
+    // Append circles to SVG
+    svg.appendChild(trackCircle);
+    svg.appendChild(progressCircle);
+
+    // Create text container
+    const textDiv = document.createElement('div');
+    textDiv.classList.add('gauge-text');
+
+    // Create number element
+    const numberSpan = document.createElement('span');
+    numberSpan.classList.add('gauge-number');
+    numberSpan.textContent = '0%'; // Start at 0 for animation
+
+    // Create label element
+    const labelSpan = document.createElement('span');
+    labelSpan.classList.classList.add('gauge-label');
+    labelSpan.textContent = label;
+
+    // Append number and label to text container
+    textDiv.appendChild(numberSpan);
+    textDiv.appendChild(labelSpan);
+
+
+    // Append SVG and text to the container element
+    el.appendChild(svg);
+    el.appendChild(textDiv);
+
+    // Animate the progress and number
+    requestAnimationFrame(() => {
+        const offset = circumference - (percent / 100) * circumference;
+        progressCircle.style.strokeDashoffset = offset;
+
+        // Animate the number
+        let currentPercent = 0;
+        const animationDuration = 1000; // 1 second
+        const startTime = performance.now();
+
+        function animateNumber(currentTime) {
+            const elapsedTime = currentTime - startTime;
+            const progress = Math.min(elapsedTime / animationDuration, 1);
+            currentPercent = Math.floor(progress * percent);
+            numberSpan.textContent = `${currentPercent}%`;
+
+            if (progress < 1) {
+                requestAnimationFrame(animateNumber);
+            }
+        }
+
+        requestAnimationFrame(animateNumber);
+    });
+}
+
+// Function to switch between tabs/sections
+function switchTab(tabId) {
+    // Hide all sections
+    contentSections.forEach(section => {
+        section.classList.remove('active');
+        section.style.display = 'none';
+    });
+
+    // Show the selected section
+    const targetSection = document.getElementById(tabId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+        targetSection.style.display = 'block';
+
+        // Determine which data and elements to use based on the tab
+        let dataToRender = [];
+        let listElementId = '';
+        let gridContainerId = '';
+        let sidebarTitle = '';
+
+        if (tabId === 'artists') {
+            dataToRender = artistsData;
+            listElementId = 'artists-list';
+            gridContainerId = 'artists-grid-container';
+            sidebarTitle = 'Artists';
+        } else if (tabId === 'palf') {
+            dataToRender = socialMediaData; // Use social media data for PALF
+            listElementId = 'palf-list';
+            gridContainerId = 'palf-grid-container';
+            sidebarTitle = 'PALF'; // Changed from 'PALF Artists'
+        } else if (tabId === 'truvatos') {
+            dataToRender = socialMediaData; // Use social media data for TRUVATOS
+            listElementId = 'truvatos-list';
+            gridContainerId = 'truvatos-grid-container';
+            sidebarTitle = 'TRUVATOS'; // Changed from 'TRUVATOS Artists'
+        }
+
+        // Update sidebar title
+        const sidebarTitleElement = targetSection.querySelector('.sidebar-title h2');
+        if (sidebarTitleElement) {
+            sidebarTitleElement.textContent = sidebarTitle;
+        }
+
+
+        // Render list and panels for the active section
+        renderList(listElementId, dataToRender, handleSelection);
+        renderPanels(gridContainerId, dataToRender);
+
+        // Optionally, select the first item by default when switching tabs
+        const firstItemLi = document.getElementById(listElementId)?.querySelector('li');
+        if (firstItemLi) {
+          // Pass the targetSection element when triggering the click programmatically
+          handleSelection({ target: firstItemLi }, dataToRender, targetSection);
+        }
+    }
+
+    // Update active class on navigation buttons
+    navButtons.forEach(button => {
+        button.classList.remove('active');
+        if (button.dataset.tab === tabId) {
+            button.classList.add('active');
+        }
+    });
+}
+
 
 // Initial setup
 function init() {
-  renderArtistList();
-  renderPanels(); // Render the dynamic panels
-  // Optionally, select the first artist by default
-  const firstArtistLi = artistListElement.querySelector('li');
-  if (firstArtistLi) {
-    firstArtistLi.click(); // This will trigger handleArtistSelection
-  }
+  // Add event listeners to navigation buttons
+  navButtons.forEach(button => {
+      button.addEventListener('click', () => {
+          switchTab(button.dataset.tab);
+      });
+  });
+
+  // Set the default active tab (e.g., 'artists')
+  switchTab('artists');
+
+  // Add event listener to hamburger icon (already done, but ensure it targets active sidebar)
+  // The toggleSidebar function is updated to target the active sidebar.
 }
 
 // Run initialization when the DOM is ready
 document.addEventListener('DOMContentLoaded', init);
 
 // --- Placeholder for future CRUD operations ---
-// function addArtist(name) { ... renderArtistList(); renderPanels(); ... }
-// function editArtist(id, newName) { ... renderArtistList(); ... } // Panel content might need update too
-// function deleteArtist(id) { ... renderArtistList(); renderPanels(); ... }
+// function addItem(dataArray, item) { ... renderList(); renderPanels(); ... }
+// function editItem(dataArray, id, newItem) { ... renderList(); ... } // Panel content might need update too
+// function deleteItem(dataArray, id) { ... renderList(); renderPanels(); ... }
 // Remember to re-render lists/panels after any CRUD operation.

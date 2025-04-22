@@ -9,239 +9,509 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --sidebar-width-percentage: 20%;
+  --sidebar-width-desktop: 250px; /* Fixed width for desktop sidebar */
+  --header-height: 64px; /* Fixed header height */
   --gap: 15px; /* Gap between elements */
+
+  /* Colors */
   --main-bg-color: #FFFFFF;
-  --sidebar-bg-color: #FFD600;
+  --sidebar-bg-color-start: #FFE866; /* Sidebar gradient start */
+  --sidebar-bg-color-end: #FFD700; /* Sidebar gradient end */
   --sidebar-text-color: #000000; /* Black text on yellow */
   --panel-bg-color: #FFFFFF;
-  --panel-border-color: #FFD600;
-  --header-bg-color: #FFD600;
+  --panel-border-color: #FFD700; /* Updated border color */
+  --header-bg-color: #FFD700; /* Updated header color */
   --header-text-color: #000000;
-  --active-item-bg-color: #FFFFFF;
-  --active-item-text-color: #000000;
+  --active-item-bg-color: #CCAD00; /* Active item background */
+  --active-item-text-color: #FFFFFF; /* Active item text color */
+  --gauge-track-color: #EFEFEF; /* Gauge track color */
+  --gauge-progress-color: #FFD700; /* Gauge progress color */
+
+  /* Animation and Transition */
   --animation-duration: 1.5s; /* Slightly slower for smoother glow */
-  --transition-duration: 0.3s; /* Duration for selection transition */
-  --header-height: 65px; /* Estimated header height for calc() */
-  /* --panel-min-height: 300px; /* No longer primary height driver */
-  --panel-height-desktop: 75vh; /* New height for desktop panels */
-  --panel-height-mobile: 50vh; /* New height for mobile panels */
-  --panel-border-width: 2px; /* Define border width as a variable */
+  --transition-duration: 0.3s; /* Duration for selection transition and sidebar toggle */
+
+  /* Panel Height */
+  --panel-height-desktop: 75vh;
+  --panel-height-mobile: 50vh;
+  --panel-border-width: 2px;
+
+  /* Card Specific Styles */
+  --card-background: #FFFFFF;
+  --card-border-radius: 16px;
+  --card-box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  --card-padding-desktop: 24px;
+  --card-padding-mobile: 16px;
+  --card-title-color: #FFD700; /* Keep variable, override below */
+  --card-title-font-size: 18px;
 }
 
 /* Define the pulsating glow animation */
 @keyframes pulseGlow {
   0% {
-    /* Start with a subtle glow */
     box-shadow: 0 0 4px 0px var(--panel-border-color);
   }
   50% {
-    /* Increase spread and blur for a stronger glow */
     box-shadow: 0 0 10px 3px var(--panel-border-color);
   }
   100% {
-    /* Return to subtle glow */
     box-shadow: 0 0 4px 0px var(--panel-border-color);
   }
 }
 
 body {
   margin: 0;
-  height: 100vh; /* Ensure body takes full viewport height */
-  max-height: 100vh; /* Prevent body from exceeding viewport */
+  padding: 0; /* Remove default body padding */
   background-color: var(--main-bg-color);
-  color: #000000; /* Default text color black */
-  display: flex; /* Use flexbox for header + container layout */
-  flex-direction: column; /* Stack header and container vertically */
-  overflow: hidden; /* Prevent body scroll */
+  color: #FFFFFF; /* Default text color white */
+  /* Body does not need display: flex/grid for this layout */
 }
 
 /* Header Styles */
 .main-header {
-  background-color: var(--header-bg-color);
-  color: var(--header-text-color);
-  padding: 1em var(--gap); /* Vertical and horizontal padding */
+  position: fixed; /* Fixed header */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--header-height); /* Keep original height */
+  background-color: var(--header-bg-color); /* Keep original color */
+  color: #FFFFFF; /* Header text color white */
+  padding: 0; /* Remove padding, handled by inner elements */
   text-align: center;
-  width: 100%; /* Full width */
-  box-sizing: border-box; /* Include padding in width */
-  flex-shrink: 0; /* Prevent header from shrinking */
-  height: var(--header-height); /* Use variable for height */
-  display: flex; /* Center content vertically */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column; /* Stack title and nav vertically */
+  align-items: center; /* Center content horizontally */
+  justify-content: center; /* Center content vertically */
+  z-index: 1000; /* Ensure header is on top */
+  box-shadow: 0 2px 4px rgba(0,0,0,.15); /* Keep original shadow */
+}
+
+.header-title {
+  flex-grow: 1; /* Allow title area to take available space */
+  display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  padding: 0 var(--gap); /* Add horizontal padding back */
+  box-sizing: border-box;
 }
 
 .main-header h1 {
   margin: 0;
-  font-size: 1.5em; /* Adjust size as needed */
-  font-weight: 700; /* Bold title */
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #FFFFFF; /* Header title color white */
 }
 
-.container {
+/* Hamburger Icon (initially hidden on desktop) */
+.hamburger-icon {
+  display: none; /* Hidden by default */
+  font-size: 1.8em;
+  cursor: pointer;
+  margin-right: var(--gap);
+  z-index: 1001; /* Ensure icon is above header content */
+  color: #FFFFFF; /* Hamburger icon color white */
+  position: absolute; /* Position absolutely within header */
+  left: var(--gap); /* Position from the left */
+  top: 50%; /* Vertically center */
+  transform: translateY(-50%); /* Adjust for vertical centering */
+}
+
+
+/* Header Navigation Band */
+.main-nav {
   display: flex;
-  padding: var(--gap);
-  gap: var(--gap);
-  flex-grow: 1; /* Allow container to fill remaining vertical space */
+  width: 100%; /* Full width band */
+  height: 32px; /* Adjust height as needed */
+  /* Removed max-width, centering, and gap from here */
+}
+
+.nav-button {
+  flex-grow: 1; /* Allow buttons to fill the width */
+  flex-basis: 0; /* Allow buttons to shrink equally */
+  background-color: rgba(255, 255, 255, 0.12); /* Semi-transparent white 12% */
+  color: #FFFFFF; /* Text white */
+  border: none; /* Remove border */
+  padding: 0; /* Remove padding, handled by shape */
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color var(--transition-duration) ease,
+              color var(--transition-duration) ease;
+  display: flex; /* Use flex to center text */
+  align-items: center;
+  justify-content: center;
+  position: relative; /* Needed for pseudo-elements or clip-path */
+  overflow: hidden; /* Hide overflow from shapes */
+  /* Removed border-radius */
+
+  /* Apply the same parallelogram shape to all buttons */
+  clip-path: polygon(0 0, 100% 0, calc(100% - 15px) 100%, 0 100%); /* Adjust 15px for slant */
+}
+
+/* Adjust margins for overlap */
+.main-nav .nav-button:nth-child(1) {
+  margin-right: -15px; /* Overlap with the next button */
+}
+
+.main-nav .nav-button:nth-child(2) {
+  z-index: 1; /* Ensure it's above the overlaps */
+  margin-right: -15px; /* Overlap with the next button */
+}
+
+.main-nav .nav-button:nth-child(3) {
+  /* No margin-left needed as it's the last button */
+}
+
+
+.nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent white 25% on hover */
+}
+
+.nav-button.active {
+  background-color: #FFFFFF; /* Active background white */
+  color: #333333; /* Active text charcoal */
+  /* Removed border-color */
+}
+
+/* Container for main content area (sidebar + panels) */
+.container {
+  /* No flex/grid needed here anymore, managed by fixed positioning and margins */
+  padding-top: var(--header-height); /* Add padding to prevent content from being hidden by fixed header */
+  display: flex; /* Use flex to manage sidebar and main content */
+  height: calc(100vh - var(--header-height)); /* Fill remaining vertical space */
   overflow: hidden; /* Prevent container scroll, children will scroll */
-  max-height: calc(100vh - var(--header-height));
-  box-sizing: border-box;
 }
 
-/* Left Section: Artist List */
+/* Content Sections */
+.content-section {
+  display: none; /* Hidden by default */
+  /* Position below header */
+  padding-top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow: hidden; /* Prevent section scroll, container will scroll */
+}
+
+.content-section.active {
+  display: block; /* Show active section */
+}
+
+/* Adjust the container within sections */
+.content-section .container {
+    padding-top: 0; /* Remove extra padding inside sections */
+    height: 100%; /* Fill the section height */
+}
+
+
+/* Left Section: Artist List (Sidebar) */
 .artist-list-section {
-  flex: 0 0 var(--sidebar-width-percentage);
-  background-color: var(--sidebar-bg-color);
-  color: var(--sidebar-text-color); /* Black text */
+  position: fixed; /* Fixed sidebar */
+  top: var(--header-height); /* Position below header */
+  left: 0;
+  width: var(--sidebar-width-desktop);
+  height: calc(100vh - var(--header-height)); /* Fill remaining vertical space */
+  background: linear-gradient(to bottom, var(--sidebar-bg-color-start), var(--sidebar-bg-color-end)); /* Gradient background */
+  color: #FFFFFF; /* Sidebar text color white */
   padding: var(--gap);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  overflow-y: auto; /* Enable vertical scrolling */
   box-sizing: border-box;
-  height: calc(100vh - var(--header-height) - 2 * var(--gap));
+  overflow-y: auto; /* Enable vertical scrolling for the sidebar content */
+  z-index: 999; /* Ensure sidebar is below header but above main content */
+  transition: transform var(--transition-duration) ease; /* Add transition for collapsing */
+  transform: translateX(0); /* Default state: visible */
 }
 
-.artist-list-section h2 {
-  margin-top: 0;
-  color: var(--sidebar-text-color); /* Black text */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Darker border for contrast */
-  padding-bottom: 0.5em;
+/* Collapsed state for sidebar */
+.artist-list-section.collapsed {
+  transform: translateX(-100%);
+}
+
+/* Sidebar Title Block */
+.sidebar-title {
+  background: linear-gradient(to bottom, var(--sidebar-bg-color-start), var(--sidebar-bg-color-end)); /* Same gradient as sidebar */
+  border-radius: 8px;
+  padding: 8px 16px;
+  text-align: center;
+  margin-bottom: var(--gap); /* Space below the title block */
   position: sticky; /* Keep title visible */
   top: -1px; /* Adjust slightly if needed */
-  background-color: var(--sidebar-bg-color); /* Match background */
   z-index: 1; /* Ensure it's above list items */
 }
 
-#artist-list {
+.sidebar-title h2 {
+  margin: 0; /* Remove default h2 margin */
+  color: #FFFFFF; /* Sidebar title color white */
+  font-size: 1.5em; /* Adjust size as needed */
+  font-weight: 700;
+  border-bottom: none; /* Remove border from h2 */
+  padding-bottom: 0; /* Remove padding from h2 */
+}
+
+
+#artists-list, #palf-list, #truvatos-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-#artist-list li {
+#artists-list li, #palf-list li, #truvatos-list li {
   padding: 0.75em 0.5em;
   cursor: pointer;
   border-radius: 4px;
   margin-bottom: 0.25em;
-  color: var(--sidebar-text-color); /* Ensure list items also have black text */
-  background-color: transparent; /* Default background */
+  color: #FFFFFF; /* Artist list item text color white */
+  background-color: transparent;
   /* Add transition for background, color, and transform */
   transition: background-color var(--transition-duration) ease,
               color var(--transition-duration) ease,
               transform var(--transition-duration) ease;
-  transform: translateY(0); /* Initial state for transform */
+  font-size: 14px; /* Item font size */
+  font-weight: bold; /* Item font weight */
+  text-transform: uppercase; /* Item text transform */
 }
 
-#artist-list li:hover {
-  background-color: rgba(0, 0, 0, 0.1); /* Slight dark highlight on hover */
+#artists-list li:hover, #palf-list li:hover, #truvatos-list li:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Slight white highlight on hover */
 }
 
-#artist-list li.active {
-  background-color: var(--active-item-bg-color); /* White background */
-  color: var(--active-item-text-color); /* Black text */
+#artists-list li.active, #palf-list li.active, #truvatos-list li.active {
+  background-color: var(--active-item-bg-color); /* Active background #CCAD00 */
+  color: var(--active-item-text-color); /* Active text color #FFFFFF */
   font-weight: bold;
   /* Subtle slide/press down effect for the list item */
   transform: translateY(2px);
   box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Optional: add shadow for depth */
 }
 
-/* Right Section: Panels */
+/* Right Section: Panels (Main Content Area) */
 .panels-section {
-  flex: 1; /* Takes remaining space */
-  min-width: 0; /* Prevent flex blowout */
-  overflow-y: auto; /* Enable vertical scrolling for the entire section */
-  height: calc(100vh - var(--header-height) - 2 * var(--gap));
-  padding-right: 5px; /* Add a little padding so scrollbar doesn't overlap content */
+  flex-grow: 1; /* Allow main section to take remaining space */
+  margin-left: var(--sidebar-width-desktop); /* Push content right by sidebar width */
+  padding: var(--gap); /* Add padding */
+  overflow-y: auto; /* Enable vertical scrolling for the main content */
   box-sizing: border-box;
+  /* Removed fixed height/max-height */
+  transition: margin-left var(--transition-duration) ease; /* Add transition for sidebar toggle */
 }
 
+/* Adjust main content margin when sidebar is collapsed */
+.panels-section.sidebar-collapsed {
+  margin-left: 0;
+}
+
+
+/* 12-column Grid Container */
+.grid-container {
+  max-width: 1400px; /* Max width */
+  margin: 0 auto; /* Center the grid */
+  display: grid;
+  grid-template-columns: repeat(12, 1fr); /* 12 equal columns */
+  gap: var(--gap); /* Gap between grid items */
+  /* Add padding if needed, or rely on panels-section padding */
+}
+
+/* Panels within the grid (now acting as cards) */
 .panel {
-  background-color: var(--panel-bg-color);
-  /* Use fixed border width */
-  border: var(--panel-border-width) solid var(--panel-border-color);
-  border-radius: 8px;
-  /* Initial box-shadow state for the animation */
-  box-shadow: 0 0 4px 0px var(--panel-border-color);
+  /* Panels will span columns as needed, defined by their content or specific classes */
+  grid-column: span 12; /* Default: span all 12 columns */
+
+  background-color: var(--card-background); /* Card background */
+  border-radius: var(--card-border-radius); /* Card border radius */
+  box-shadow: var(--card-box-shadow); /* Card box shadow */
+  padding: var(--card-padding-desktop); /* Desktop padding */
   overflow: hidden; /* Clip content like iframe */
-  display: flex; /* Use flex to make iframe fill the panel */
-  /* Apply the new glow animation */
-  animation: pulseGlow var(--animation-duration) ease-in-out infinite;
-  /* Set panel height using variable */
-  height: var(--panel-height-desktop);
-  width: 100%; /* Take full width of the panels-section */
-  margin-bottom: var(--gap); /* Add space between panels */
-  box-sizing: border-box; /* Include border in width/height */
-  /* Ensure no transform or position changes that cause movement */
+  display: flex;
+  flex-direction: column; /* Stack title and iframe vertically */
+  /* Removed border and animation from panel itself */
+  /* animation: pulseGlow var(--animation-duration) ease-in-out infinite; */
+  /* Removed fixed height/min-height from panel */
+  width: 100%; /* Take full width of its grid column(s) */
+  margin-bottom: 0; /* Remove margin-bottom, use grid gap instead */
+  box-sizing: border-box;
   transform: none;
-  position: relative; /* Or static, ensure it's not absolute/fixed causing issues */
+  position: relative;
+  /* Add transition for box-shadow */
+  transition: box-shadow var(--transition-duration) ease;
 }
 
-/* Remove margin from the last panel */
-.panel:last-child {
-  margin-bottom: 0;
+/* Style for the h2 title inside the panel/card */
+.panel h2 {
+  font-size: var(--card-title-font-size); /* Title font size */
+  color: #333333; /* Card title color charcoal */
+  margin-top: 0; /* Remove top margin */
+  margin-bottom: var(--gap); /* Add space below title */
 }
+
 
 .panel iframe {
-  width: 100%;
-  height: 100%; /* Iframe fills the panel */
-  /* min-height removed, rely on panel height */
+  width: 100%; /* Iframe fills the panel width */
+  aspect-ratio: 16 / 9; /* Maintain 16:9 aspect ratio */
+  max-height: 600px; /* Maximum height for the iframe */
   border: none; /* Ensure no iframe border */
   display: block;
 }
 
-/* Responsive adjustments */
-@media (max-width: 900px) { /* Adjust breakpoint as needed */
- .artist-list-section {
-     /* Slightly wider sidebar on medium screens */
-    flex: 0 0 30%;
-  }
-  /* Panels section already takes remaining space */
+/* --- Gauge Styles --- */
+.gauge {
+  width: 140px;
+  height: 140px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif; /* Use a simple font for numbers/labels */
 }
 
+.gauge-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Start from the top */
+}
 
-@media (max-width: 768px) {
+.gauge-circle {
+  fill: none;
+  stroke-width: 10; /* Adjust stroke width as needed */
+  stroke-linecap: round;
+  transform-origin: 50% 50%;
+}
+
+.gauge-track {
+  stroke: var(--gauge-track-color);
+}
+
+.gauge-progress {
+  stroke: var(--gauge-progress-color);
+  transition: stroke-dashoffset 1s ease-in-out; /* Animation for progress */
+}
+
+.gauge-text {
+  position: relative; /* Position above SVG */
+  z-index: 1;
+  text-align: center;
+}
+
+.gauge-number {
+  font-size: 32px;
+  font-weight: bold;
+  color: #FFFFFF; /* Gauge number color white */
+}
+
+.gauge-label {
+  font-size: 12px;
+  color: #FFFFFF; /* Gauge label color white */
+  margin-top: 4px;
+}
+
+/* --- Micro-UX Styles --- */
+
+/* Scrollbar Styling (Webkit browsers) */
+.panels-section::-webkit-scrollbar {
+  width: 8px; /* Thin scrollbar */
+}
+
+.panels-section::-webkit-scrollbar-track {
+  background: transparent; /* Transparent track */
+}
+
+.panels-section::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25); /* Semi-transparent black thumb */
+  border-radius: 4px; /* Rounded corners */
+}
+
+.panels-section::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4); /* Darker thumb on hover */
+}
+
+/* Dark Mode Adjustment */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Adjust yellow colors by reducing brightness */
+    --sidebar-bg-color-start: #FFE866; /* Keep original for filter */
+    --sidebar-bg-color-end: #FFD700; /* Keep original for filter */
+    --panel-border-color: #FFD700; /* Keep original for filter */
+    --header-bg-color: #FFD700; /* Keep original for filter */
+    --active-item-bg-color: #CCAD00; /* Keep original for filter */
+    --gauge-progress-color: #FFD700; /* Keep original for filter */
+  }
+
+  /* Apply filter to elements using the yellow colors */
+  .artist-list-section,
+  .main-header,
+  .panel,
+  #artists-list li.active, #palf-list li.active, #truvatos-list li.active,
+  .gauge-progress,
+  .sidebar-title { /* Apply filter to the new sidebar title block */
+    filter: brightness(90%); /* Reduce brightness by 10% */
+  }
+
+  /* Adjust text colors for dark mode readability */
   body {
-    overflow: auto; /* Allow body scroll on small screens if content overflows */
-  }
-  .container {
-    flex-direction: column; /* Stack sections vertically */
-    overflow: visible; /* Allow container to grow */
-    max-height: none; /* Remove max-height constraint */
-    height: auto; /* Allow container height to adjust */
-    flex-wrap: nowrap; /* Prevent wrapping when stacked */
-    gap: 0; /* Remove gap when stacked, rely on margins */
-    padding: var(--gap); /* Keep padding */
+    color: #eee; /* Lighter default text */
   }
 
-  .artist-list-section {
-    flex-basis: auto; /* Allow sidebar to take natural height */
-    width: 100%; /* Full width */
-    max-height: 35vh; /* Limit height on small screens */
-    height: auto; /* Let content determine height up to max-height */
-    margin-bottom: var(--gap); /* Space below sidebar */
-    flex-grow: 0; /* Prevent sidebar from growing */
-    flex-shrink: 0; /* Prevent sidebar from shrinking */
-    order: 1; /* Ensure sidebar comes after header */
-    /* height: auto; /* Override fixed height - Already set */
+  .main-header h1,
+  .sidebar-title h2, /* Adjust sidebar title h2 color */
+  #artists-list li, #palf-list li, #truvatos-list li,
+  .gauge-number,
+  .gauge-label {
+     color: #eee; /* Lighter text for titles, list items, and gauge text */
   }
 
-   .artist-list-section h2 {
-     position: static; /* Disable sticky header on mobile */
-   }
-
-  .panels-section {
-    /* Already single column effectively */
-    width: 100%; /* Ensure panels take full width */
-    order: 2; /* Ensure panels come after sidebar */
-    height: auto; /* Allow panel section to grow based on content */
-    max-height: none; /* Remove max height constraint */
-    overflow-y: visible; /* Disable scroll on section itself, let page scroll */
-    padding-right: 0; /* Remove padding for scrollbar */
+  .panel h2 {
+      color: #bbb; /* Slightly lighter charcoal for card titles in dark mode */
   }
 
-  .panel {
-     /* Use mobile panel height variable */
-     height: var(--panel-height-mobile);
-     margin-bottom: var(--gap); /* Keep space */
-     /* Animation remains */
+
+  /* Adjust scrollbar for dark mode */
+  .panels-section::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent white thumb */
+  }
+
+  .panels-section::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.4); /* Lighter thumb on hover */
   }
 }
+
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  /* Show hamburger icon */
+  .hamburger-icon {
+    display: block;
+  }
+
+  /* Sidebar */
+  .artist-list-section {
+    /* Sidebar is fixed and initially off-screen */
+    transform: translateX(-100%);
+  }
+
+  /* Show sidebar when active class is added by JS */
+  .artist-list-section.active {
+    transform: translateX(0);
+  }
+
+  /* Main content area */
+  .panels-section {
+    margin-left: 0; /* Remove margin when sidebar is hidden */
+    /* Panels will still span 12 columns within the grid-container */
+  }
+
+  /* Panel padding on mobile */
+  .panel {
+     padding: var(--card-padding-mobile); /* Mobile padding */
+     /* Removed panel height adjustment here, iframe aspect ratio handles height */
+  }
+}
+
+/* Optional: Adjust grid behavior on smaller screens if needed */
+/* @media (max-width: 600px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); // Example: auto-fit panels
+  }
+} */
