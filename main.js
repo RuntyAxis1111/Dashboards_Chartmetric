@@ -51,13 +51,14 @@ const artistsData = [
 ];
 
 // Data for PALF and TRUVATOS sections (Social Media)
+// Each item now includes separate report URLs for PALF and TRUVATOS
 const socialMediaData = [
-  { id: 'fb', name: 'Facebook', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
-  { id: 'ig', name: 'Instagram', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
-  { id: 'x', name: 'X (Twitter)', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
-  { id: 'yt', name: 'YouTube', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
-  { id: 'tt', name: 'TikTok', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
-  { id: 'sc', name: 'Snapchat', reportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF' },
+  { id: 'fb', name: 'Facebook', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'ig', name: 'Instagram', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'x', name: 'X (Twitter)', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'yt', name: 'YouTube', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'tt', name: 'TikTok', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'sc', name: 'Snapchat', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
 ];
 
 
@@ -133,6 +134,9 @@ function handleSelection(event, data, activeSectionElement = null) {
       return; // Exit if activeSection is null
   }
 
+  // Determine the current tab/section ID
+  const currentTabId = activeSection.id;
+
   // Find the grid container within the active section
   const currentGridContainer = activeSection.querySelector('.grid-container');
   if (!currentGridContainer) {
@@ -146,8 +150,22 @@ function handleSelection(event, data, activeSectionElement = null) {
     const iframe = panel.querySelector('iframe');
     if (iframe) {
       if (panel.dataset.itemId === itemId) {
-        // Use the first URL from the array for artists, or the single URL for social media
-        const targetUrl = selectedItem.reportUrls ? selectedItem.reportUrls[0] || 'about:blank' : selectedItem.reportUrl || 'about:blank';
+        let targetUrl = 'about:blank';
+        // Use the first URL from the array for artists
+        if (selectedItem.reportUrls) {
+            targetUrl = selectedItem.reportUrls[0] || 'about:blank';
+        } else if (currentTabId === 'palf' && selectedItem.palfReportUrl) {
+            // Use PALF specific URL for PALF section
+            targetUrl = selectedItem.palfReportUrl;
+        } else if (currentTabId === 'truvatos' && selectedItem.truvatosReportUrl) {
+             // Use TRUVATOS specific URL for TRUVATOS section
+            targetUrl = selectedItem.truvatosReportUrl;
+        } else if (selectedItem.reportUrl) {
+             // Fallback to generic reportUrl if available (less specific)
+             targetUrl = selectedItem.reportUrl;
+        }
+
+
         if (iframe.src !== targetUrl) {
           iframe.src = targetUrl;
         }
