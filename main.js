@@ -61,6 +61,15 @@ const socialMediaData = [
   { id: 'sc', name: 'Snapchat', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
 ];
 
+// --- Modification Start ---
+// Update palfReportUrl for all items except Facebook to match truvatosReportUrl
+socialMediaData.forEach(item => {
+    if (item.id !== 'fb') {
+        item.palfReportUrl = item.truvatosReportUrl;
+    }
+});
+// --- Modification End ---
+
 
 // Get elements
 const hamburgerIcon = document.getElementById('hamburger-icon');
