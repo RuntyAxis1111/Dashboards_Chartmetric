@@ -19,7 +19,7 @@
   --color-white: #FFFFFF;
   --color-light-grey: #B0B0B0; /* Secondary text color */
   --color-dark-grey: #333333; /* For elements like gauge track on dark background */
-  --color-panel-background: #F0F0F0; /* Light grey/neutral background for panels */
+  --color-panel-background: #FFFFFF; /* Light grey/neutral background for panels */
   --color-sidebar-gradient-start: #000000; /* Top color for sidebar gradient */
   --color-sidebar-gradient-end: #1B1B1B; /* Bottom color for sidebar gradient */
 
