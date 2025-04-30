@@ -14,18 +14,35 @@
   --gap: 15px; /* Gap between elements */
 
   /* Colors */
-  --main-bg-color: #FFFFFF;
-  --sidebar-bg-color-start: #FFE866; /* Sidebar gradient start */
-  --sidebar-bg-color-end: #FFD700; /* Sidebar gradient end */
-  --sidebar-text-color: #000000; /* Black text on yellow */
-  --panel-bg-color: #FFFFFF;
-  --panel-border-color: #FFD700; /* Updated border color */
-  --header-bg-color: #FFD700; /* Updated header color */
-  --header-text-color: #000000;
-  --active-item-bg-color: #CCAD00; /* Active item background */
-  --active-item-text-color: #FFFFFF; /* Active item text color */
-  --gauge-track-color: #EFEFEF; /* Gauge track color */
-  --gauge-progress-color: #FFD700; /* Gauge progress color */
+  --color-black: #000000;
+  --color-yellow: #FFD700; /* Accent color */
+  --color-white: #FFFFFF;
+  --color-light-grey: #B0B0B0; /* Secondary text color */
+  --color-dark-grey: #333333; /* For elements like gauge track on dark background */
+  --color-panel-background: #F0F0F0; /* Light grey/neutral background for panels */
+  --color-sidebar-gradient-start: #000000; /* Top color for sidebar gradient */
+  --color-sidebar-gradient-end: #1B1B1B; /* Bottom color for sidebar gradient */
+
+
+  --main-bg-color: var(--color-black);
+  --sidebar-bg-color-start: var(--color-black); /* Solid black sidebar */
+  --sidebar-bg-color-end: var(--color-black); /* Solid black sidebar */
+  --sidebar-text-color: var(--color-white);
+  --panel-bg-color: var(--color-black); /* Card background */
+  --panel-border-color: var(--color-yellow); /* Accent border/glow color */
+  --header-bg-color: var(--color-black);
+  --header-text-color: var(--color-white);
+  --active-item-bg-color: var(--color-yellow); /* Active item background */
+  --active-item-text-color: var(--color-black); /* Active item text color (black on yellow for contrast) */
+  --gauge-track-color: var(--color-dark-grey); /* Gauge track color on dark background */
+  --gauge-progress-color: var(--color-yellow); /* Gauge progress color */
+  --card-background: var(--color-black); /* Card background */
+  --card-box-shadow: 0 4px 12px rgba(255, 215, 0, 0.15); /* Subtle yellow shadow */
+  --card-padding-desktop: 24px;
+  --card-padding-mobile: 16px;
+  --card-title-color: var(--color-yellow); /* Card title color (accent) */
+  --card-title-font-size: 18px;
+
 
   /* Animation and Transition */
   --animation-duration: 1.5s; /* Slightly slower for smoother glow */
@@ -35,15 +52,6 @@
   --panel-height-desktop: 75vh;
   --panel-height-mobile: 50vh;
   --panel-border-width: 2px;
-
-  /* Card Specific Styles */
-  --card-background: #FFFFFF;
-  --card-border-radius: 16px;
-  --card-box-shadow: 0 4px 12px rgba(0,0,0,.08);
-  --card-padding-desktop: 24px;
-  --card-padding-mobile: 16px;
-  --card-title-color: #FFD700; /* Keep variable, override below */
-  --card-title-font-size: 18px;
 }
 
 /* Define the pulsating glow animation */
@@ -63,7 +71,7 @@ body {
   margin: 0;
   padding: 0; /* Remove default body padding */
   background-color: var(--main-bg-color);
-  color: #FFFFFF; /* Default text color white */
+  color: var(--color-white); /* Default text color white */
   /* Body does not need display: flex/grid for this layout */
 }
 
@@ -74,8 +82,8 @@ body {
   left: 0;
   width: 100%;
   height: var(--header-height); /* Keep original height */
-  background-color: var(--header-bg-color); /* Keep original color */
-  color: #FFFFFF; /* Header text color white */
+  background-color: var(--header-bg-color); /* Black header */
+  color: var(--header-text-color); /* Header text color white */
   padding: 0; /* Remove padding, handled by inner elements */
   text-align: center;
   box-sizing: border-box;
@@ -84,7 +92,7 @@ body {
   align-items: center; /* Center content horizontally */
   justify-content: center; /* Center content vertically */
   z-index: 1000; /* Ensure header is on top */
-  box-shadow: 0 2px 4px rgba(0,0,0,.15); /* Keep original shadow */
+  box-shadow: 0 2px 4px rgba(0,0,0,.5); /* Darker shadow */
 }
 
 .header-title {
@@ -101,7 +109,7 @@ body {
   margin: 0;
   font-size: 1.5em;
   font-weight: 700;
-  color: #FFFFFF; /* Header title color white */
+  color: var(--header-text-color); /* Header title color white */
 }
 
 /* Hamburger Icon (initially hidden on desktop) */
@@ -111,7 +119,7 @@ body {
   cursor: pointer;
   margin-right: var(--gap);
   z-index: 1001; /* Ensure icon is above header content */
-  color: #FFFFFF; /* Hamburger icon color white */
+  color: var(--color-yellow); /* Hamburger icon color yellow */
   position: absolute; /* Position absolutely within header */
   left: var(--gap); /* Position from the left */
   top: 50%; /* Vertically center */
@@ -130,8 +138,8 @@ body {
 .nav-button {
   flex-grow: 1; /* Allow buttons to fill the width */
   flex-basis: 0; /* Allow buttons to shrink equally */
-  background-color: rgba(255, 255, 255, 0.12); /* Semi-transparent white 12% */
-  color: #FFFFFF; /* Text white */
+  background-color: transparent; /* Transparent background */
+  color: var(--color-white); /* Text white */
   border: none; /* Remove border */
   padding: 0; /* Remove padding, handled by shape */
   cursor: pointer;
@@ -167,12 +175,13 @@ body {
 
 
 .nav-button:hover {
-  background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent white 25% on hover */
+  background-color: rgba(255, 215, 0, 0.15); /* Semi-transparent yellow on hover */
+  color: var(--color-yellow); /* Yellow text on hover */
 }
 
 .nav-button.active {
-  background-color: #FFFFFF; /* Active background white */
-  color: #333333; /* Active text charcoal */
+  background-color: var(--active-item-bg-color); /* Active background yellow */
+  color: var(--active-item-text-color); /* Active text black */
   /* Removed border-color */
 }
 
@@ -212,8 +221,8 @@ body {
   left: 0;
   width: var(--sidebar-width-desktop);
   height: calc(100vh - var(--header-height)); /* Fill remaining vertical space */
-  background: linear-gradient(to bottom, var(--sidebar-bg-color-start), var(--sidebar-bg-color-end)); /* Gradient background */
-  color: #FFFFFF; /* Sidebar text color white */
+  background: linear-gradient(to top, var(--color-sidebar-gradient-end), var(--color-sidebar-gradient-start)); /* Vertical gradient */
+  color: var(--sidebar-text-color); /* Sidebar text color white */
   padding: var(--gap);
   box-sizing: border-box;
   overflow-y: auto; /* Enable vertical scrolling for the sidebar content */
@@ -229,7 +238,7 @@ body {
 
 /* Sidebar Title Block */
 .sidebar-title {
-  background: linear-gradient(to bottom, var(--sidebar-bg-color-start), var(--sidebar-bg-color-end)); /* Same gradient as sidebar */
+  background: var(--color-black); /* Solid black */
   border-radius: 8px;
   padding: 8px 16px;
   text-align: center;
@@ -241,7 +250,7 @@ body {
 
 .sidebar-title h2 {
   margin: 0; /* Remove default h2 margin */
-  color: #FFFFFF; /* Sidebar title color white */
+  color: var(--color-yellow); /* Sidebar title color yellow (accent) */
   font-size: 1.5em; /* Adjust size as needed */
   font-weight: 700;
   border-bottom: none; /* Remove border from h2 */
@@ -260,7 +269,7 @@ body {
   cursor: pointer;
   border-radius: 4px;
   margin-bottom: 0.25em;
-  color: #FFFFFF; /* Artist list item text color white */
+  color: var(--sidebar-text-color); /* Artist list item text color white */
   background-color: transparent;
   /* Add transition for background, color, and transform */
   transition: background-color var(--transition-duration) ease,
@@ -272,16 +281,17 @@ body {
 }
 
 #artists-list li:hover, #palf-list li:hover, #truvatos-list li:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Slight white highlight on hover */
+  background-color: rgba(255, 215, 0, 0.1); /* Slight yellow highlight on hover */
+  color: var(--color-yellow); /* Yellow text on hover */
 }
 
 #artists-list li.active, #palf-list li.active, #truvatos-list li.active {
-  background-color: var(--active-item-bg-color); /* Active background #CCAD00 */
-  color: var(--active-item-text-color); /* Active text color #FFFFFF */
+  background-color: var(--active-item-bg-color); /* Active background yellow */
+  color: var(--active-item-text-color); /* Active text color black */
   font-weight: bold;
   /* Subtle slide/press down effect for the list item */
   transform: translateY(2px);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Optional: add shadow for depth */
+  box-shadow: 0 1px 3px rgba(255, 215, 0, 0.3); /* Optional: add yellow shadow for depth */
 }
 
 /* Right Section: Panels (Main Content Area) */
@@ -316,9 +326,9 @@ body {
   /* Panels will span columns as needed, defined by their content or specific classes */
   grid-column: span 12; /* Default: span all 12 columns */
 
-  background-color: var(--card-background); /* Card background */
+  background-color: var(--color-panel-background); /* Light grey/neutral background */
   border-radius: var(--card-border-radius); /* Card border radius */
-  box-shadow: var(--card-box-shadow); /* Card box shadow */
+  box-shadow: var(--card-box-shadow); /* Card box shadow (subtle yellow) */
   padding: var(--card-padding-desktop); /* Desktop padding */
   overflow: hidden; /* Clip content like iframe */
   display: flex;
@@ -338,7 +348,7 @@ body {
 /* Style for the h2 title inside the panel/card */
 .panel h2 {
   font-size: var(--card-title-font-size); /* Title font size */
-  color: #333333; /* Card title color charcoal */
+  color: var(--color-yellow); /* Card title color yellow */
   margin-top: 0; /* Remove top margin */
   margin-bottom: var(--gap); /* Add space below title */
 }
@@ -381,11 +391,11 @@ body {
 }
 
 .gauge-track {
-  stroke: var(--gauge-track-color);
+  stroke: var(--gauge-track-color); /* Dark grey track */
 }
 
 .gauge-progress {
-  stroke: var(--gauge-progress-color);
+  stroke: var(--gauge-progress-color); /* Yellow progress */
   transition: stroke-dashoffset 1s ease-in-out; /* Animation for progress */
 }
 
@@ -398,12 +408,12 @@ body {
 .gauge-number {
   font-size: 32px;
   font-weight: bold;
-  color: #FFFFFF; /* Gauge number color white */
+  color: var(--color-white); /* Gauge number color white */
 }
 
 .gauge-label {
   font-size: 12px;
-  color: #FFFFFF; /* Gauge label color white */
+  color: var(--color-light-grey); /* Gauge label color light grey */
   margin-top: 4px;
 }
 
@@ -419,55 +429,53 @@ body {
 }
 
 .panels-section::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.25); /* Semi-transparent black thumb */
+  background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent white thumb */
   border-radius: 4px; /* Rounded corners */
 }
 
 .panels-section::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.4); /* Darker thumb on hover */
+  background-color: rgba(255, 255, 255, 0.4); /* Lighter thumb on hover */
 }
 
-/* Dark Mode Adjustment */
+/* Dark Mode Adjustment - Adjusting colors directly for consistency */
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Adjust yellow colors by reducing brightness */
-    --sidebar-bg-color-start: #FFE866; /* Keep original for filter */
-    --sidebar-bg-color-end: #FFD700; /* Keep original for filter */
-    --panel-border-color: #FFD700; /* Keep original for filter */
-    --header-bg-color: #FFD700; /* Keep original for filter */
-    --active-item-bg-color: #CCAD00; /* Keep original for filter */
-    --gauge-progress-color: #FFD700; /* Keep original for filter */
+    /* Colors are already set for a dark theme, no major changes needed here */
+    /* Ensure variables are used consistently */
   }
 
-  /* Apply filter to elements using the yellow colors */
+  /* Remove filter as colors are set directly */
   .artist-list-section,
   .main-header,
   .panel,
   #artists-list li.active, #palf-list li.active, #truvatos-list li.active,
   .gauge-progress,
-  .sidebar-title { /* Apply filter to the new sidebar title block */
-    filter: brightness(90%); /* Reduce brightness by 10% */
+  .sidebar-title {
+    filter: none; /* Remove filter */
   }
 
-  /* Adjust text colors for dark mode readability */
+  /* Adjust text colors for dark mode readability (already set via variables) */
   body {
-    color: #eee; /* Lighter default text */
+    color: var(--color-white); /* Lighter default text */
   }
 
   .main-header h1,
-  .sidebar-title h2, /* Adjust sidebar title h2 color */
+  .sidebar-title h2, /* Sidebar title h2 color (yellow) */
   #artists-list li, #palf-list li, #truvatos-list li,
-  .gauge-number,
-  .gauge-label {
-     color: #eee; /* Lighter text for titles, list items, and gauge text */
+  .gauge-number {
+     color: var(--color-white); /* Lighter text for titles, list items, and gauge text */
   }
 
   .panel h2 {
-      color: #bbb; /* Slightly lighter charcoal for card titles in dark mode */
+      color: var(--card-title-color); /* Card title color (yellow) */
+  }
+
+  .gauge-label {
+      color: var(--color-light-grey); /* Gauge label color light grey */
   }
 
 
-  /* Adjust scrollbar for dark mode */
+  /* Adjust scrollbar for dark mode (already set) */
   .panels-section::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent white thumb */
   }
@@ -498,7 +506,8 @@ body {
 
   /* Main content area */
   .panels-section {
-    margin-left: 0; /* Remove margin when sidebar is hidden */
+    margin-left: var(--gap); /* Add some margin to the left */
+    margin-right: var(--gap); /* Add some margin to the right */
     /* Panels will still span 12 columns within the grid-container */
   }
 
@@ -506,6 +515,11 @@ body {
   .panel {
      padding: var(--card-padding-mobile); /* Mobile padding */
      /* Removed panel height adjustment here, iframe aspect ratio handles height */
+  }
+
+  /* Adjust grid container padding on mobile */
+  .grid-container {
+      padding: 0; /* Remove padding from grid container on mobile */
   }
 }
 

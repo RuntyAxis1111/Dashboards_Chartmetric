@@ -54,20 +54,28 @@ const artistsData = [
 // Each item now includes separate report URLs for PALF and TRUVATOS
 const socialMediaData = [
   { id: 'fb', name: 'Facebook', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
-  { id: 'ig', name: 'Instagram', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
-  { id: 'x', name: 'X (Twitter)', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
-  { id: 'yt', name: 'YouTube', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
-  { id: 'tt', name: 'TikTok', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
-  { id: 'sc', name: 'Snapchat', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'ig', name: 'Instagram', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/ec282e0b-ed12-4e16-938b-b938328b5cda/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'x', name: 'X (Twitter)', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/e1c63634-b541-44ef-af28-77c27ff63e0b/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'yt', name: 'YouTube', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/5a14b2b1-b972-4fb7-843c-dbb1b6cfb11e/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'tt', name: 'TikTok (working)', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  // Removed Snapchat entry
 ];
 
 // --- Modification Start ---
 // Update palfReportUrl for all items except Facebook to match truvatosReportUrl
+// This loop is now redundant as specific URLs are provided below, but keeping it for potential future use or if other items need this fallback.
 socialMediaData.forEach(item => {
     if (item.id !== 'fb') {
-        item.palfReportUrl = item.truvatosReportUrl;
+        // item.palfReportUrl = item.truvatosReportUrl; // Commented out as specific URLs are used below
     }
 });
+
+// Update specific PALF report URLs with the provided embeds
+// These were already updated in the previous step, keeping this here for clarity if needed later.
+// socialMediaData.find(item => item.id === 'ig').palfReportUrl = 'https://lookerstudio.google.com/embed/reporting/ec282e0b-ed12-4e16-938b-b938328b5cda/page/gnpEF';
+// socialMediaData.find(item => item.id === 'yt').palfReportUrl = 'https://lookerstudio.google.com/embed/reporting/5a14b2b1-b972-4fb7-843c-dbb1b6cfb11e/page/gnpEF';
+// socialMediaData.find(item => item.id === 'x').palfReportUrl = 'https://lookerstudio.google.com/embed/reporting/e1c63634-b541-44ef-af28-77c27ff63e0b/page/gnpEF';
+
 // --- Modification End ---
 
 
