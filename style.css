@@ -303,6 +303,8 @@ body {
   box-sizing: border-box;
   /* Removed fixed height/max-height */
   transition: margin-left var(--transition-duration) ease; /* Add transition for sidebar toggle */
+  display: flex; /* Use flexbox to stack grid and button */
+  flex-direction: column;
 }
 
 /* Adjust main content margin when sidebar is collapsed */
@@ -319,6 +321,7 @@ body {
   grid-template-columns: repeat(12, 1fr); /* 12 equal columns */
   gap: var(--gap); /* Gap between grid items */
   /* Add padding if needed, or rely on panels-section padding */
+  flex-grow: 1; /* Allow grid to take available space */
 }
 
 /* Panels within the grid (now acting as cards) */
@@ -436,6 +439,35 @@ body {
 .panels-section::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.4); /* Lighter thumb on hover */
 }
+
+/* Privacy Policy Button Container */
+.privacy-policy-container {
+  width: 100%;
+  text-align: center; /* Center the button */
+  margin-top: var(--gap); /* Add space above the button */
+  padding-bottom: var(--gap); /* Add padding below the button */
+}
+
+/* Privacy Policy Button Style */
+.privacy-policy-button {
+  background-color: var(--color-yellow); /* Yellow background */
+  color: var(--color-black); /* Black text */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color var(--transition-duration) ease,
+              opacity var(--transition-duration) ease;
+}
+
+.privacy-policy-button:hover {
+  background-color: #e6c300; /* Slightly darker yellow on hover */
+  opacity: 0.9;
+}
+
 
 /* Dark Mode Adjustment - Adjusting colors directly for consistency */
 @media (prefers-color-scheme: dark) {
