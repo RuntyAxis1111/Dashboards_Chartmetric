@@ -84,11 +84,6 @@ const hamburgerIcon = document.getElementById('hamburger-icon');
 const navButtons = document.querySelectorAll('.nav-button');
 const contentSections = document.querySelectorAll('.content-section');
 
-// Get Privacy Policy buttons for each section
-const privacyPolicyButtonArtists = document.getElementById('privacy-policy-button');
-const privacyPolicyButtonPalf = document.getElementById('privacy-policy-button-palf');
-const privacyPolicyButtonTruvatos = document.getElementById('privacy-policy-button-truvatos');
-
 
 // Generic function to render a list in a sidebar
 function renderList(listElementId, data, clickHandler) {
@@ -408,24 +403,6 @@ function init() {
           switchTab(button.dataset.tab);
       });
   });
-
-  // Add event listeners to Privacy Policy buttons
-  if (privacyPolicyButtonArtists) {
-    privacyPolicyButtonArtists.addEventListener('click', () => {
-      window.open('/politica.html', '_blank'); // Open in a new tab
-    });
-  }
-  if (privacyPolicyButtonPalf) {
-    privacyPolicyButtonPalf.addEventListener('click', () => {
-      window.open('/politica.html', '_blank'); // Open in a new tab
-    });
-  }
-  if (privacyPolicyButtonTruvatos) {
-    privacyPolicyButtonTruvatos.addEventListener('click', () => {
-      window.open('/politica.html', '_blank'); // Open in a new tab
-    });
-  }
-
 
   // Set the default active tab (e.g., 'artists')
   switchTab('artists');
