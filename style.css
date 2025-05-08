@@ -22,6 +22,8 @@
   --color-panel-background: #FFFFFF; /* Light grey/neutral background for panels */
   --color-sidebar-gradient-start: #000000; /* Top color for sidebar gradient */
   --color-sidebar-gradient-end: #1B1B1B; /* Bottom color for sidebar gradient */
+  --color-fire-glow: rgba(255, 165, 0, 0.5); /* Orange for fire glow */
+  --color-neon-glow: rgba(255, 215, 0, 0.7); /* Yellow for neon glow */
 
 
   --main-bg-color: var(--color-black);
@@ -47,6 +49,8 @@
   /* Animation and Transition */
   --animation-duration: 1.5s; /* Slightly slower for smoother glow */
   --transition-duration: 0.3s; /* Duration for selection transition and sidebar toggle */
+  --button-transition-duration: 0.15s; /* 150ms transition for buttons */
+
 
   /* Panel Height */
   --panel-height-desktop: 75vh;
@@ -66,6 +70,47 @@
     box-shadow: 0 0 4px 0px var(--panel-border-color);
   }
 }
+
+/* Define the fire glow animation */
+@keyframes fireGlow {
+  0% {
+    box-shadow: 0 0 5px 2px rgba(255, 165, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px 5px rgba(255, 165, 0, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 5px 2px rgba(255, 165, 0, 0.3);
+  }
+}
+
+/* Define the neon glow animation */
+@keyframes neonGlow {
+  0% {
+    box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.3);
+  }
+}
+
+
+/* Define the grow-skew-reverse animation */
+@keyframes grow-skew-reverse {
+  0% {
+    transform: scale(1) skewX(0);
+  }
+  50% {
+    transform: scale(1.05) skewX(-2deg); /* Grow slightly and skew left */
+  }
+  100% {
+    transform: scale(1) skewX(0);
+  }
+}
+
 
 body {
   margin: 0;
@@ -185,12 +230,69 @@ body {
   /* Removed border-color */
 }
 
+/* Nuevo: Contenedor para los botones de banda PALF */
+.band-buttons-container {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  top: calc(var(--header-height) + 32px); /* Debajo del header principal y la banda de navegación */
+  left: 0;
+  width: 100%;
+  height: 32px; /* Altura similar a la banda de navegación principal */
+  background-color: var(--color-black); /* Fondo negro */
+  z-index: 990; /* Debajo del header, encima del contenido */
+  display: flex; /* Usar flexbox para los botones */
+  justify-content: center; /* Centrar botones horizontalmente */
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,.5); /* Sombra */
+}
+
+.band-buttons-container.active {
+    display: flex; /* Mostrar cuando está activo */
+}
+
+/* Nuevo: Estilo para los botones de banda */
+.band-button {
+  /* Inherit font, weight, transform from root/body */
+  font-size: 1em; /* Match main nav font size */
+  font-weight: bold; /* Match main nav font weight */
+  text-transform: uppercase; /* Match main nav text transform */
+
+  background-color: var(--color-white); /* Fondo blanco (inverted) */
+  color: var(--color-black); /* Texto negro (inverted) */
+  border: none;
+  padding: 0 15px; /* Padding horizontal - adjust if needed to match visual size */
+  height: 100%; /* Ocupar toda la altura del contenedor */
+  cursor: pointer;
+  transition: background-color var(--button-transition-duration) ease-in-out,
+              color var(--button-transition-duration) ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px; /* Espacio entre botones */
+  /* Removed border-radius */
+  border-radius: 0; /* Ensure no border radius */
+
+
+  /* Apply the same parallelogram shape as main nav buttons */
+  /* Updated clip-path to have diagonals on both ends */
+  clip-path: polygon(15px 0, 100% 0, calc(100% - 15px) 100%, 0 100%); /* Adjust 15px for slant */
+}
+
+.band-button:hover,
+.band-button.active {
+  background-color: var(--color-black); /* Fondo negro en hover/activo (inverted) */
+  color: var(--color-white); /* Texto blanco en hover/activo (inverted) */
+}
+
+
 /* Container for main content area (sidebar + panels) */
 .container {
   /* No flex/grid needed here anymore, managed by fixed positioning and margins */
-  padding-top: var(--header-height); /* Add padding to prevent content from being hidden by fixed header */
+  /* Ajustar padding-top para dejar espacio al header principal y a la nueva banda de botones */
+  padding-top: calc(var(--header-height) + 32px); /* Header + Nav Band */
   display: flex; /* Use flex to manage sidebar and main content */
-  height: calc(100vh - var(--header-height)); /* Fill remaining vertical space */
+  /* Ajustar altura para tener en cuenta la nueva banda de botones */
+  height: calc(100vh - var(--header-height) - 32px); /* Full height minus Header and Band Buttons */
   overflow: hidden; /* Prevent container scroll, children will scroll */
 }
 
@@ -198,8 +300,10 @@ body {
 .content-section {
   display: none; /* Hidden by default */
   /* Position below header */
-  padding-top: var(--header-height);
-  height: calc(100vh - var(--header-height));
+  /* Ajustar padding-top para dejar espacio al header principal y a la nueva banda de botones */
+  padding-top: calc(var(--header-height) + 32px); /* Header + Nav Band */
+  /* Ajustar altura para tener en cuenta la nueva banda de botones */
+  height: calc(100vh - var(--header-height) - 32px); /* Full height minus Header and Band Buttons */
   overflow: hidden; /* Prevent section scroll, container will scroll */
 }
 
@@ -217,10 +321,12 @@ body {
 /* Left Section: Artist List (Sidebar) */
 .artist-list-section {
   position: fixed; /* Fixed sidebar */
-  top: var(--header-height); /* Position below header */
+  /* Ajustar top para posicionar debajo de la nueva banda de botones */
+  top: calc(var(--header-height) + 32px); /* Header + Nav Band */
   left: 0;
   width: var(--sidebar-width-desktop);
-  height: calc(100vh - var(--header-height)); /* Fill remaining vertical space */
+  /* Ajustar altura para tener en cuenta la nueva banda de botones */
+  height: calc(100vh - var(--header-height) - 32px); /* Full height minus Header and Band Buttons */
   background: linear-gradient(to top, var(--color-sidebar-gradient-end), var(--color-sidebar-gradient-start)); /* Vertical gradient */
   color: var(--sidebar-text-color); /* Sidebar text color white */
   padding: var(--gap);
@@ -521,6 +627,25 @@ body {
   .grid-container {
       padding: 0; /* Remove padding from grid container on mobile */
   }
+
+  /* Ajustar top y altura para la banda de botones en móvil */
+  .band-buttons-container {
+      top: var(--header-height); /* Debajo del header principal */
+      height: 32px; /* Altura similar a la banda de navegación principal */
+  }
+
+  /* Ajustar padding-top del container y content-section en móvil */
+  .container,
+  .content-section {
+      padding-top: calc(var(--header-height) + 32px); /* Header + Band Buttons */
+      height: calc(100vh - var(--header-height) - 32px); /* Full height minus Header and Band Buttons */
+  }
+
+   /* Ajustar top y altura del sidebar en móvil */
+  .artist-list-section {
+      top: calc(var(--header-height) + 32px); /* Debajo de la banda de botones */
+      height: calc(100vh - var(--header-height) - 32px); /* Full height minus Header and Band Buttons */
+  }
 }
 
 /* Optional: Adjust grid behavior on smaller screens if needed */
@@ -530,58 +655,46 @@ body {
   }
 } */
 
-/* Privacy Policy Section Styling */
-.privacy-policy-section {
-  grid-column: span 12; /* Make it span all 12 columns */
-  background-color: var(--card-background); /* Use card background color */
-  color: var(--color-white); /* White text for readability */
-  padding: var(--card-padding-desktop); /* Use card padding */
-  border-radius: 8px; /* Match card border radius */
-  margin-top: var(--gap); /* Add space above the policy */
-  box-shadow: var(--card-box-shadow); /* Optional: Add subtle shadow */
+/* Removed Privacy Policy Section Styling */
+
+/* Static Private Data Button */
+.private-data-button {
+  position: fixed;
+  bottom: var(--gap); /* Use the defined gap variable */
+  left: var(--gap); /* Use the defined gap variable */
+  z-index: 10000; /* Ensure it's above everything else */
+  padding: 10px 15px; /* Adjust padding as needed */
+  background-color: var(--color-white); /* White background */
+  color: var(--color-black); /* Black text */
+  border: 1px solid var(--color-black); /* Black border */
+  /* Removed border-radius */
+  cursor: pointer;
+  font-size: 0.8em; /* Smaller font size */
+  font-weight: bold;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and text */
+  transition: background-color var(--transition-duration) ease,
+              color var(--transition-duration) ease,
+              transform var(--transition-duration) ease,
+              box-shadow var(--transition-duration) ease; /* Include box-shadow in transition */
+  animation: neonGlow 2s ease-in-out infinite; /* Apply neon glow animation */
+
+  /* Apply diagonal cuts to top-left and bottom-right */
+  clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px); /* Adjusted clip-path for top-left and bottom-right diagonals */
 }
 
-.privacy-policy-section h2 {
-  color: var(--color-yellow); /* Yellow title */
-  font-size: 1.5em;
-  margin-top: 0;
-  margin-bottom: var(--gap);
+.private-data-button .material-icons {
+    font-size: 1.2em; /* Adjust icon size */
 }
 
-.privacy-policy-section h3 {
-  color: var(--color-white); /* White subheading */
-  font-size: 1.2em;
-  margin-top: var(--gap);
-  margin-bottom: calc(var(--gap) / 2);
-}
 
-.privacy-policy-section p,
-.privacy-policy-section ul {
-  font-size: 1em;
-  line-height: 1.6;
-  margin-bottom: var(--gap);
-}
-
-.privacy-policy-section ul {
-  padding-left: 20px; /* Indent list items */
-}
-
-.privacy-policy-section li {
-  margin-bottom: calc(var(--gap) / 4);
-}
-
-.privacy-policy-section a {
-  color: var(--color-yellow); /* Yellow links */
-  text-decoration: none;
-}
-
-.privacy-policy-section a:hover {
-  text-decoration: underline;
-}
-
-/* Adjust padding for mobile */
-@media (max-width: 900px) {
-  .privacy-policy-section {
-    padding: var(--card-padding-mobile); /* Mobile padding */
-  }
+.private-data-button:hover {
+  background-color: var(--color-yellow); /* Yellow background on hover */
+  color: var(--color-black); /* Black text on hover */
+  border-color: var(--color-yellow); /* Yellow border on hover */
+  animation: none; /* Stop neon glow on hover */
+  transform: scale(1.05) skewX(-2deg); /* Apply grow-skew-reverse effect */
+  box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7); /* Add a yellow glow on hover */
 }
