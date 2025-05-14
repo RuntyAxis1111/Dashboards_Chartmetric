@@ -58,14 +58,15 @@ const socialMediaData = [
   { id: 'x', name: 'X (Twitter)', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/e1c63634-b541-44ef-af28-77c27ff63e0b/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
   { id: 'yt', name: 'YouTube', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/5a14b2b1-b972-4fb7-843c-dbb1b6cfb11e/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
   { id: 'tt', name: 'TikTok (working)', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/43a608b8-7c3d-4ba2-a08a-21991d52dcd7/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
+  { id: 'public-relations', name: 'PUBLIC RELATIONS', type: 'link', url: 'https://glittering-sherbet-aa0e80.netlify.app/' }, // Moved Public Relations link here
   // Removed Snapchat entry
 ];
 
-// Data for PALF Bands
+// Data for PALF Bands (removed Public Relations link)
 const palfBandsData = [
-  { id: 'grupo-destino', name: 'Grupo Destino' },
-  { id: 'muzsa', name: 'Muzsa' },
-  { id: 'jugada-maestra', name: 'Jugada Maestra' },
+  { id: 'grupo-destino', name: 'Grupo Destino', type: 'band' },
+  { id: 'muzsa', name: 'Muzsa', type: 'band' },
+  { id: 'jugada-maestra', name: 'Jugada Maestra', type: 'band' },
 ];
 
 // Default iframe URL for PALF social media panels under bands
@@ -104,7 +105,10 @@ function renderPanels(gridContainerId, data) {
   const gridContainerElement = document.getElementById(gridContainerId);
   if (gridContainerElement) {
     gridContainerElement.innerHTML = ''; // Limpiar paneles existentes
-    data.forEach(item => {
+    // Filter out items that are direct links, as they don't need a panel
+    const itemsToRender = data.filter(item => item.type !== 'link');
+
+    itemsToRender.forEach(item => {
       // Crear contenedor del panel (tarjeta)
       const panelDiv = document.createElement('div');
       panelDiv.classList.add('panel'); // Usar clase 'panel' para estilos de tarjeta
@@ -140,6 +144,25 @@ function handleSelection(event, data, activeSectionElement = null) {
   const selectedItem = data.find(item => item.id === itemId);
 
   if (!selectedItem) return;
+
+  // --- Handle direct link navigation ---
+  if (selectedItem.type === 'link' && selectedItem.url) {
+      window.location.href = selectedItem.url;
+      // Optional: Remove active class from all list items if navigating away
+      const currentList = selectedLi.closest('ul');
+      if (currentList) {
+          currentList.querySelectorAll('li').forEach(li => {
+              li.classList.remove('active');
+          });
+      }
+      // Add active class to the clicked item before navigating
+      if (selectedLi && selectedLi.classList) {
+          selectedLi.classList.add('active');
+      }
+      return; // Stop further processing for links
+  }
+  // --- End direct link navigation ---
+
 
   // Find the active section - use passed element if available, otherwise query the DOM
   const activeSection = activeSectionElement || document.querySelector('.content-section.active');
@@ -219,13 +242,16 @@ function handleSelection(event, data, activeSectionElement = null) {
 
 
   // Desplazar el panel seleccionado a la vista suavemente
-  const currentPanelsSection = activeSection.querySelector('.panels-section'); // Encontrar la sección de paneles en la sección activa
-  const targetPanel = currentGridContainer.querySelector(`.panel[data-item-id="${itemId}"]`); // Encontrar el panel en el contenedor de cuadrícula actual
-  if (currentPanelsSection && targetPanel) {
-    currentPanelsSection.scrollTo({
-        top: targetPanel.offsetTop,
-        behavior: 'smooth'
-    });
+  // Only scroll if the selected item is NOT a link (since links don't have panels)
+  if (selectedItem.type !== 'link') {
+      const currentPanelsSection = activeSection.querySelector('.panels-section'); // Encontrar la sección de paneles en la sección activa
+      const targetPanel = currentGridContainer.querySelector(`.panel[data-item-id="${itemId}"]`); // Encontrar el panel en el contenedor de cuadrícula actual
+      if (currentPanelsSection && targetPanel) {
+        currentPanelsSection.scrollTo({
+            top: targetPanel.offsetTop,
+            behavior: 'smooth'
+        });
+      }
   }
 
 
@@ -242,37 +268,42 @@ function handleSelection(event, data, activeSectionElement = null) {
 function handlePalfBandSelection(event) {
     const selectedButton = event.target; // El target es el botón de banda
     const bandId = selectedButton.dataset.bandId; // Usar data-bandId
+    const selectedBandData = palfBandsData.find(band => band.id === bandId);
 
-    // Actualizar la variable de estado de banda seleccionada
+    if (!selectedBandData) return;
+
+    // Update the selected band state
     selectedPalfBandId = bandId;
 
-    // Actualizar clase 'active' en los botones de banda
+    // Update active class on band buttons
     const palfBandButtons = palfBandButtonsContainer.querySelectorAll('.band-button');
     palfBandButtons.forEach(button => {
         button.classList.remove('active');
     });
     selectedButton.classList.add('active');
 
-    // Actualizar el título de la barra lateral PALF para mostrar el nombre de la banda seleccionada
+    // Update the PALF sidebar title to show the selected band name
     if (palfSidebarTitle) {
         palfSidebarTitle.textContent = selectedButton.textContent;
     }
 
 
-    // Renderizar la lista de redes sociales en la barra lateral PALF
-    // Nota: Todas las bandas usan los mismos datos de redes sociales por ahora
-    renderList('palf-list', socialMediaData, handleSelection);
+    // Render the social media list in the PALF sidebar
+    // Note: All bands use the same social media data for now
+    // Filter out the 'link' type items when rendering the list under a band selection
+    const socialMediaDataForBands = socialMediaData.filter(item => item.type !== 'link');
+    renderList('palf-list', socialMediaDataForBands, handleSelection);
 
-    // Renderizar los paneles de redes sociales en el área principal de PALF
-    renderPanels('palf-grid-container', socialMediaData);
+    // Render the social media panels in the main PALF area
+    renderPanels('palf-grid-container', socialMediaDataForBands);
 
-    // Seleccionar el primer elemento de la lista de redes sociales por defecto
+    // Select the first social media list item by default
     const firstSocialMediaLi = document.getElementById('palf-list')?.querySelector('li');
     if (firstSocialMediaLi) {
-        // Simular un evento de click en el primer elemento de la lista de redes sociales
+        // Simulate a click event on the first social media list item
         const simulatedEvent = { target: firstSocialMediaLi };
-        // Llamar a handleSelection con el evento simulado, los datos de redes sociales y la sección PALF activa
-        handleSelection(simulatedEvent, socialMediaData, document.getElementById('palf'));
+        // Call handleSelection with the simulated event, social media data, and the active PALF section
+        handleSelection(simulatedEvent, socialMediaDataForBands, document.getElementById('palf'));
     } else {
         console.error('handlePalfBandSelection: No se encontró el primer elemento de red social en la lista.');
     }
@@ -386,12 +417,14 @@ function renderGauge(el, percent, label = '') {
 function renderPalfBandButtons() {
     if (palfBandButtonsContainer) {
         palfBandButtonsContainer.innerHTML = ''; // Limpiar botones existentes
-        palfBandsData.forEach(band => {
+        // Filter out the 'link' type items when rendering band buttons
+        const bandButtonData = palfBandsData.filter(item => item.type !== 'link');
+        bandButtonData.forEach(item => { // Iterate through filtered palfBandsData
             const button = document.createElement('button');
             button.classList.add('band-button');
-            button.textContent = band.name;
-            button.dataset.bandId = band.id;
-            button.addEventListener('click', handlePalfBandSelection); // Usar el handler de selección de banda
+            button.textContent = item.name;
+            button.dataset.bandId = item.id;
+            button.addEventListener('click', handlePalfBandSelection); // Use the band selection handler
             palfBandButtonsContainer.appendChild(button);
         });
     }
@@ -449,69 +482,76 @@ function switchTab(tabId) {
             selectedPalfBandId = null;
 
             // En la pestaña PALF, inicialmente mostramos la lista de redes sociales (estado raíz)
-            dataToRender = socialMediaData; // Usar datos de redes sociales para el estado raíz
+            dataToRender = socialMediaData; // Usar datos de redes sociales para el estado raíz (includes the link now)
             listElementId = 'palf-list';
-            gridContainerId = 'palf-grid-container'; // El grid mostrará paneles de redes sociales
-            sidebarTitle = 'PALF'; // Título inicial de la barra lateral PALF
-            listClickHandler = handleSelection; // Usar handler genérico para redes sociales (maneja URLs específicas/genéricas)
+            gridContainerId = 'palf-grid-container'; // The grid will show panels for social media (excluding the link)
+            sidebarTitle = 'PALF'; // Initial PALF sidebar title
+            listClickHandler = handleSelection; // Use generic handler for social media (handles specific/generic URLs and links)
 
 
             // Show the PALF band buttons container
             if (palfBandButtonsContainer) {
                 palfBandButtonsContainer.classList.add('active'); // Keep class logic
                 palfBandButtonsContainer.style.display = 'flex'; // Explicitly show
-                renderPalfBandButtons(); // Renderizar los botones de banda en el sub-menú horizontal
+                renderPalfBandButtons(); // Render the band buttons in the horizontal sub-menu
             }
 
-            // Limpiar el área de paneles PALF al cambiar a la pestaña PALF
+            // Clear the PALF panels area when switching to the PALF tab
              const palfGridContainer = document.getElementById('palf-grid-container');
              if(palfGridContainer) {
                  palfGridContainer.innerHTML = '';
              }
 
-            // Renderizar la lista de redes sociales en la barra lateral PALF (estado raíz)
+            // Render the social media list in the PALF sidebar (root state)
             renderList(listElementId, dataToRender, listClickHandler);
 
-            // Renderizar los paneles de redes sociales en el área principal de PALF (estado raíz)
-            renderPanels(gridContainerId, dataToRender); // Render panels for PALF social media
+            // Render the social media panels in the main PALF area (root state)
+            // Pass only the data that should have panels (filter out links)
+            const panelDataForPalf = dataToRender.filter(item => item.type !== 'link');
+            renderPanels(gridContainerId, panelDataForPalf);
 
-            // Seleccionar el primer elemento de la lista de redes sociales por defecto
-            const firstSocialMediaLi = document.getElementById(listElementId)?.querySelector('li');
-            if (firstSocialMediaLi) {
-                // Simular un evento de click en el primer elemento de la lista de redes sociales
-                const simulatedEvent = { target: firstSocialMediaLi };
-                // Llamar a handleSelection con el evento simulado, los datos de redes sociales y la sección PALF activa
-                handleSelection(simulatedEvent, socialMediaData, document.getElementById('palf'));
+            // Select the first social media list item by default (if it's not a link)
+            const firstItemToSelect = dataToRender.find(item => item.type !== 'link');
+            if (firstItemToSelect) {
+                 const firstItemLi = document.getElementById(listElementId)?.querySelector(`li[data-item-id="${firstItemToSelect.id}"]`);
+                 if (firstItemLi) {
+                     // Simulate a click event on the first social media list item
+                     const simulatedEvent = { target: firstItemLi };
+                     // Call handleSelection with the simulated event, social media data, and the active PALF section
+                     handleSelection(simulatedEvent, dataToRender, document.getElementById('palf'));
+                 } else {
+                     console.error('switchTab(palf): No se encontró el primer elemento de red social en la lista para seleccionar.');
+                 }
             } else {
-                console.error('switchTab(palf): No se encontró el primer elemento de red social en la lista.');
+                 console.warn('switchTab(palf): No hay elementos de red social para seleccionar en la lista.');
             }
 
 
         } else if (tabId === 'truvatos') {
-            dataToRender = socialMediaData; // Usar datos de redes sociales para TRUVATOS
+            dataToRender = socialMediaData.filter(item => item.type !== 'link'); // Filter out links for Truvatos
             listElementId = 'truvatos-list';
             gridContainerId = 'truvatos-grid-container';
             sidebarTitle = 'TRUVATOS';
-            listClickHandler = handleSelection; // Usar handler genérico para TRUVATOS
+            listClickHandler = handleSelection; // Use generic handler for TRUVATOS
 
-            // Renderizar lista y panels para Truvatos
+            // Render list and panels for Truvatos
              renderList(listElementId, dataToRender, listClickHandler);
              renderPanels(gridContainerId, dataToRender); // Render panels for Truvatos
-             // Seleccionar el primer elemento por defecto
+             // Select the first element by default
              const firstItemLi = document.getElementById(listElementId)?.querySelector('li');
              if (firstItemLi) {
                handleSelection({ target: firstItemLi }, dataToRender, targetSection);
              }
         }
 
-        // Actualizar título de la barra lateral
+        // Update sidebar title
         const sidebarTitleElement = targetSection.querySelector('.sidebar-title h2');
         if (sidebarTitleElement) {
             sidebarTitleElement.textContent = sidebarTitle;
         }
     }
 
-    // Actualizar clase 'active' en los botones de navegación principal
+    // Update 'active' class on main navigation buttons
     navButtons.forEach(button => {
         button.classList.remove('active');
         if (button.dataset.tab === tabId) {
@@ -521,9 +561,9 @@ function switchTab(tabId) {
 }
 
 
-// Inicialización
+// Initialization
 function init() {
-  // Añadir event listeners a los botones de navegación principal
+  // Add event listeners to main navigation buttons
   navButtons.forEach(button => {
       button.addEventListener('click', () => {
           switchTab(button.dataset.tab);
@@ -538,18 +578,18 @@ function init() {
   }
 
 
-  // Establecer la pestaña activa por defecto (ej. 'artists')
+  // Set the default active tab (e.g., 'artists')
   switchTab('artists');
 
-  // Añadir event listener al icono de hamburguesa (ya hecho, pero asegurar que apunta a la barra lateral activa)
-  // La función toggleSidebar está actualizada para apuntar a la barra lateral activa.
+  // Add event listener to the hamburger icon (already done, but ensure it points to the active sidebar)
+  // The toggleSidebar function is updated to point to the active sidebar.
 }
 
-// Ejecutar inicialización cuando el DOM esté listo
+// Execute initialization when the DOM is ready
 document.addEventListener('DOMContentLoaded', init);
 
-// --- Placeholder para futuras operaciones CRUD ---
+// --- Placeholder for future CRUD operations ---
 // function addItem(dataArray, item) { ... renderList(); renderPanels(); ... }
-// function editItem(dataArray, id, newItem) { ... renderList(); ... } // El contenido del panel también podría necesitar actualización
+// function editItem(dataArray, id, newItem) { ... renderList(); ... } // The panel content might also need updating
 // function deleteItem(dataArray, id) { ... renderList(); renderPanels(); ... }
-// Recordar volver a renderizar listas/paneles después de cualquier operación CRUD.
+// Remember to re-render lists/panels after any CRUD operation.
