@@ -30,6 +30,12 @@ const palfBandsData = [
 // Default iframe URL for PALF social media panels under bands
 const defaultPalfIframeUrl = "https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF";
 
+// Get DOM elements
+const navButtons = document.querySelectorAll('.nav-button');
+const contentSections = document.querySelectorAll('.content-section');
+const palfBandButtonsContainer = document.getElementById('palf-band-buttons');
+const privateDataButton = document.getElementById('private-data-button');
+
 // Variable para rastrear la banda PALF seleccionada
 let selectedPalfBandId = null;
 
