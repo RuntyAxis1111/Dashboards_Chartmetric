@@ -39,6 +39,75 @@ const privateDataButton = document.getElementById('private-data-button');
 // Variable para rastrear la banda PALF seleccionada
 let selectedPalfBandId = null;
 
+// Function to render list items
+function renderList(listId, data) {
+  const listElement = document.getElementById(listId);
+  if (!listElement) return;
+
+  listElement.innerHTML = '';
+  data.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item.name;
+    li.dataset.id = item.id;
+    listElement.appendChild(li);
+  });
+
+  // Add click event listeners to list items
+  listElement.querySelectorAll('li').forEach(li => {
+    li.addEventListener('click', (event) => {
+      const section = event.target.closest('.content-section');
+      handleSelection(event, data, section);
+    });
+  });
+}
+
+// Function to render panels
+function renderPanels(containerId, data) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  container.innerHTML = '';
+  data.forEach(item => {
+    const panel = document.createElement('div');
+    panel.className = 'panel';
+    panel.dataset.id = item.id;
+    
+    // Create iframe based on section type
+    const iframe = document.createElement('iframe');
+    iframe.className = 'panel-iframe';
+    
+    if (container.id === 'artists-grid-container') {
+      iframe.src = item.reportUrls[0] || 'about:blank';
+    } else if (container.id === 'palf-grid-container') {
+      iframe.src = item.palfReportUrl || 'about:blank';
+    } else if (container.id === 'truvatos-grid-container') {
+      iframe.src = item.truvatosReportUrl || 'about:blank';
+    }
+    
+    panel.appendChild(iframe);
+    container.appendChild(panel);
+  });
+}
+
+// Function to handle selection
+function handleSelection(event, data, section) {
+  const selectedId = event.target.dataset.id;
+  const item = data.find(item => item.id === selectedId);
+  
+  if (!item) return;
+
+  // Update active state in list
+  const listItems = section.querySelectorAll('li');
+  listItems.forEach(li => li.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // Update panel visibility
+  const panels = section.querySelectorAll('.panel');
+  panels.forEach(panel => {
+    panel.style.display = panel.dataset.id === selectedId ? 'block' : 'none';
+  });
+}
+
 // Function to select first item in a list
 function selectFirstItem(listId, data, section) {
   const firstLi = document.querySelector(`#${listId} li:first-child`);
@@ -46,6 +115,29 @@ function selectFirstItem(listId, data, section) {
     const simulatedEvent = { target: firstLi };
     handleSelection(simulatedEvent, data, section);
   }
+}
+
+// Function to render PALF band buttons
+function renderPalfBandButtons() {
+  if (!palfBandButtonsContainer) return;
+  
+  palfBandButtonsContainer.innerHTML = '';
+  palfBandsData.forEach(band => {
+    const button = document.createElement('button');
+    button.textContent = band.name;
+    button.dataset.id = band.id;
+    button.addEventListener('click', () => {
+      selectedPalfBandId = band.id;
+      // Update active state
+      palfBandButtonsContainer.querySelectorAll('button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      button.classList.add('active');
+      // Update panels with band-specific data
+      // Implementation depends on your specific requirements
+    });
+    palfBandButtonsContainer.appendChild(button);
+  });
 }
 
 // Function to switch tabs
@@ -118,5 +210,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set default tab and select first item
   switchTab('artists');
 });
-
-// ... rest of the code remains the same ...
