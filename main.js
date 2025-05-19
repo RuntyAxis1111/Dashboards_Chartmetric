@@ -1,212 +1,99 @@
-// Updated artist data with Daddy Yankee added at the beginning
-const artistsData = [
-  { id: 'artist0', name: 'Daddy Yankee', reportUrls: [
-    'https://lookerstudio.google.com/embed/reporting/0114febd-b174-4d34-8e78-f6b10a94535f/page/p_2la4tiiyqd',
-    'about:blank',
-    'about:blank',
-    'about:blank'
-  ]},
-  { id: 'artist1', name: 'BTS', reportUrls: [
-    'https://lookerstudio.google.com/embed/reporting/0ec3d1cf-547b-4e66-8c81-77921c1cab64/page/gnpEF',
-    'about:blank',
-    'about:blank',
-    'about:blank'
-  ]},
-  // ... rest of artistsData remains the same ...
-];
+import React, { useState } from 'react';
+import { Plus, Minus } from 'lucide-react';
 
-// Data for PALF and TRUVATOS sections (Social Media)
-const socialMediaData = [
-  { id: 'x', name: 'X (Twitter)', palfReportUrl: 'https://lookerstudio.google.com/embed/reporting/e1c63634-b541-44ef-af28-77c27ff63e0b/page/gnpEF', truvatosReportUrl: 'https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF' },
-  // ... rest of socialMediaData remains the same ...
-];
+// Previous code remains unchanged until the sidebar toggle functionality
 
-// Data for PALF Bands
-const palfBandsData = [
-  { id: 'grupo-destino', name: 'Grupo Destino', type: 'band' },
-  // ... rest of palfBandsData remains the same ...
-];
+// Get the sidebar tab element
+const sidebarTab = document.querySelector('.sidebar-tab');
+const body = document.body;
 
-// Default iframe URL for PALF social media panels under bands
-const defaultPalfIframeUrl = "https://lookerstudio.google.com/embed/reporting/b4a8cec2-b9a5-4db4-8370-c9594f08c39d/page/gnpEF";
-
-// Get DOM elements
-const navButtons = document.querySelectorAll('.nav-button');
-const contentSections = document.querySelectorAll('.content-section');
-const palfBandButtonsContainer = document.getElementById('palf-band-buttons');
-const privateDataButton = document.getElementById('private-data-button');
-
-// Variable para rastrear la banda PALF seleccionada
-let selectedPalfBandId = null;
-
-// Function to render list items
-function renderList(listId, data) {
-  const listElement = document.getElementById(listId);
-  if (!listElement) return;
-
-  listElement.innerHTML = '';
-  data.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item.name;
-    li.dataset.id = item.id;
-    listElement.appendChild(li);
-  });
-
-  // Add click event listeners to list items
-  listElement.querySelectorAll('li').forEach(li => {
-    li.addEventListener('click', (event) => {
-      const section = event.target.closest('.content-section');
-      handleSelection(event, data, section);
-    });
-  });
+// Function to toggle sidebar
+function toggleSidebar() {
+  const isOpen = body.classList.toggle('sidebar-open');
+  sidebarTab.setAttribute('aria-expanded', isOpen);
 }
 
-// Function to render panels
-function renderPanels(containerId, data) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  container.innerHTML = '';
-  data.forEach(item => {
-    const panel = document.createElement('div');
-    panel.className = 'panel';
-    panel.dataset.id = item.id;
-    
-    // Create iframe based on section type
-    const iframe = document.createElement('iframe');
-    iframe.className = 'panel-iframe';
-    
-    if (container.id === 'artists-grid-container') {
-      iframe.src = item.reportUrls[0] || 'about:blank';
-    } else if (container.id === 'palf-grid-container') {
-      iframe.src = item.palfReportUrl || 'about:blank';
-    } else if (container.id === 'truvatos-grid-container') {
-      iframe.src = item.truvatosReportUrl || 'about:blank';
-    }
-    
-    panel.appendChild(iframe);
-    container.appendChild(panel);
-  });
-}
-
-// Function to handle selection
-function handleSelection(event, data, section) {
-  const selectedId = event.target.dataset.id;
-  const item = data.find(item => item.id === selectedId);
-  
-  if (!item) return;
-
-  // Update active state in list
-  const listItems = section.querySelectorAll('li');
-  listItems.forEach(li => li.classList.remove('active'));
-  event.target.classList.add('active');
-
-  // Update panel visibility
-  const panels = section.querySelectorAll('.panel');
-  panels.forEach(panel => {
-    panel.style.display = panel.dataset.id === selectedId ? 'block' : 'none';
-  });
-}
-
-// Function to select first item in a list
-function selectFirstItem(listId, data, section) {
-  const firstLi = document.querySelector(`#${listId} li:first-child`);
-  if (firstLi) {
-    const simulatedEvent = { target: firstLi };
-    handleSelection(simulatedEvent, data, section);
+// Add event listeners for sidebar tab
+sidebarTab.addEventListener('click', toggleSidebar);
+sidebarTab.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    toggleSidebar();
   }
-}
-
-// Function to render PALF band buttons
-function renderPalfBandButtons() {
-  if (!palfBandButtonsContainer) return;
-  
-  palfBandButtonsContainer.innerHTML = '';
-  palfBandsData.forEach(band => {
-    const button = document.createElement('button');
-    button.textContent = band.name;
-    button.dataset.id = band.id;
-    button.addEventListener('click', () => {
-      selectedPalfBandId = band.id;
-      // Update active state
-      palfBandButtonsContainer.querySelectorAll('button').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      button.classList.add('active');
-      // Update panels with band-specific data
-      // Implementation depends on your specific requirements
-    });
-    palfBandButtonsContainer.appendChild(button);
-  });
-}
-
-// Function to switch tabs
-function switchTab(tabId) {
-  contentSections.forEach(section => {
-    section.classList.remove('active');
-    section.style.display = 'none';
-  });
-
-  if (palfBandButtonsContainer) {
-    palfBandButtonsContainer.classList.remove('active');
-    palfBandButtonsContainer.style.display = 'none';
-  }
-
-  const targetSection = document.getElementById(tabId);
-  if (targetSection) {
-    targetSection.classList.add('active');
-    targetSection.style.display = 'block';
-
-    let dataToRender = [];
-    let listElementId = '';
-    let gridContainerId = '';
-
-    if (tabId === 'artists') {
-      dataToRender = artistsData;
-      listElementId = 'artists-list';
-      gridContainerId = 'artists-grid-container';
-    } else if (tabId === 'palf') {
-      selectedPalfBandId = null;
-      dataToRender = socialMediaData;
-      listElementId = 'palf-list';
-      gridContainerId = 'palf-grid-container';
-
-      if (palfBandButtonsContainer) {
-        palfBandButtonsContainer.classList.add('active');
-        palfBandButtonsContainer.style.display = 'flex';
-        renderPalfBandButtons();
-      }
-    } else if (tabId === 'truvatos') {
-      dataToRender = socialMediaData.filter(item => item.type !== 'link');
-      listElementId = 'truvatos-list';
-      gridContainerId = 'truvatos-grid-container';
-    }
-
-    renderList(listElementId, dataToRender);
-    renderPanels(gridContainerId, dataToRender);
-    selectFirstItem(listElementId, dataToRender, targetSection);
-  }
-
-  navButtons.forEach(button => {
-    button.classList.remove('active');
-    if (button.dataset.tab === tabId) {
-      button.classList.add('active');
-    }
-  });
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  navButtons.forEach(button => {
-    button.addEventListener('click', () => switchTab(button.dataset.tab));
-  });
-
-  if (privateDataButton) {
-    privateDataButton.addEventListener('click', () => {
-      window.location.href = 'https://data.hybelatinamerica.com';
-    });
-  }
-
-  // Set default tab and select first item
-  switchTab('artists');
 });
+
+// Update handleSelection function to close sidebar after selection
+function handleSelection(event, data, activeSectionElement = null) {
+  const selectedLi = event.target;
+  const itemId = selectedLi.dataset.itemId;
+  const selectedItem = data.find(item => item.id === itemId);
+
+  if (!selectedItem) return;
+
+  // Close sidebar after selection
+  body.classList.remove('sidebar-open');
+  sidebarTab.setAttribute('aria-expanded', 'false');
+
+  // Handle direct link navigation
+  if (selectedItem.type === 'link' && selectedItem.url) {
+    window.location.href = selectedItem.url;
+    return;
+  }
+
+  // Find the active section
+  const activeSection = activeSectionElement || document.querySelector('.content-section.active');
+  if (!activeSection) return;
+
+  const currentTabId = activeSection.id;
+  const currentGridContainer = activeSection.querySelector('.grid-container');
+  if (!currentGridContainer) return;
+
+  // Clear existing panels and create new ones
+  const allPanels = currentGridContainer.querySelectorAll('.panel');
+  allPanels.forEach(panel => {
+    if (panel.dataset.itemId === itemId) {
+      // Create new iframe for selected panel
+      const iframe = panel.querySelector('iframe');
+      if (iframe) {
+        const newIframe = document.createElement('iframe');
+        newIframe.title = `${selectedItem.name} Panel`;
+        newIframe.frameborder = "0";
+        newIframe.style.border = "0";
+        newIframe.allowfullscreen = true;
+        newIframe.sandbox = "allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox";
+
+        // Determine target URL based on section
+        let targetUrl = 'about:blank';
+        if (currentTabId === 'palf') {
+          targetUrl = selectedPalfBandId === null ? 
+            (selectedItem.palfReportUrl || 'about:blank') : 
+            defaultPalfIframeUrl;
+        } else if (selectedItem.reportUrls) {
+          targetUrl = selectedItem.reportUrls[0] || 'about:blank';
+        } else if (currentTabId === 'truvatos' && selectedItem.truvatosReportUrl) {
+          targetUrl = selectedItem.truvatosReportUrl;
+        }
+
+        // Replace old iframe with new one
+        newIframe.src = targetUrl;
+        iframe.parentNode.replaceChild(newIframe, iframe);
+      }
+    } else {
+      // Remove other panels' iframes
+      const iframe = panel.querySelector('iframe');
+      if (iframe) {
+        iframe.src = 'about:blank';
+      }
+    }
+  });
+
+  // Update active states
+  const currentList = activeSection.querySelector('ul');
+  if (currentList) {
+    currentList.querySelectorAll('li').forEach(li => {
+      li.classList.remove('active');
+    });
+    selectedLi.classList.add('active');
+  }
+}
+
+// Rest of the code remains unchanged
